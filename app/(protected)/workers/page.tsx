@@ -1,26 +1,25 @@
-import { DataTable } from "@/components/ui/data-table"
-import { columns, Payment } from "./columns"
+"use client"
 
-async function getData(): Promise<Payment[]> {
-    // Fetch data from your API here.
+import { DataTable } from "@/components/ui/data-table"
+import { columns, Worker } from "./columns"
+
+async function getData(): Promise<Worker[]> {
     return [
-        {
-            id: "728ed52f",
-            amount: 100,
-            status: "pending",
-            email: "m@example.com",
-        },
-        // ...
+        { id: "1", name: "Alice Johnson", department: "Engineering", role: "Software Engineer", joiningDate: "2023-01-15" },
+        { id: "2", name: "Bob Wilson", department: "HR", role: "HR Manager", joiningDate: "2022-06-10" },
+        { id: "3", name: "Charlie Davis", department: "Design", role: "UI Designer", joiningDate: "2023-11-20" },
     ]
 }
 
-export default async function DemoPage() {
+export default async function Page() {
     const data = await getData()
 
     return (
-        <div className="container mx-auto py-10">
+        <div className="flex flex-1 flex-col gap-4">
             <h1 className="text-2xl font-bold">Workers</h1>
-            <DataTable columns={columns} data={data} />
+            <div className="rounded-md bg-white p-4 shadow-sm">
+                <DataTable columns={columns} data={data} filterKey="name" />
+            </div>
         </div>
     )
 }

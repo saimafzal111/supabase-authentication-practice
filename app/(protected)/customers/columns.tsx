@@ -11,15 +11,17 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
 
-export type Payment = {
+export type Customer = {
     id: string
-    amount: number
-    status: "pending" | "processing" | "success" | "failed"
+    name: string
     email: string
+    role: "Admin" | "Member" | "Guest"
+    status: "Active" | "Inactive" | "Pending"
 }
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Customer>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -43,43 +45,51 @@ export const columns: ColumnDef<Payment>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("status")}</div>
-        ),
-    },
-    {
-        accessorKey: "email",
+        accessorKey: "name",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Email
+                    Name
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
     },
     {
-        accessorKey: "amount",
-        header: () => <div className="text-right">Amount</div>,
+        accessorKey: "email",
+        header: "Email",
+    },
+    {
+        accessorKey: "role",
+        header: "Role",
         cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("amount"))
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-            }).format(amount)
-
-            return <div className="text-right font-medium">{formatted}</div>
+            const role = row.getValue("role") as string
+            return (
+                <Badge variant="secondary">
+                    {role}
+                </Badge>
+            )
+        },
+    },
+    {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+            const status = row.getValue("status") as string
+            return (
+                <Badge variant={status === "Active" ? "default" : "outline"}>
+                    {status}
+                </Badge>
+            )
         },
     },
     {
         id: "actions",
         cell: ({ row }) => {
-            const payment = row.original
+            const customer = row.original
 
             return (
                 <DropdownMenu>
@@ -92,13 +102,13 @@ export const columns: ColumnDef<Payment>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.id)}
+                            onClick={() => navigator.clipboard.writeText(customer.id)}
                         >
-                            Copy payment ID
+                            Copy ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
-                        <DropdownMenuItem>View payment details</DropdownMenuItem>
+                        <DropdownMenuItem>Edit customer</DropdownMenuItem>
+                        <DropdownMenuItem>Delete customer</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )
