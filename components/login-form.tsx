@@ -82,7 +82,7 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="Enter your Email"
                   {...register("email")}
                   className={errors.email ? "border-red-500" : ""}
                 />
@@ -96,6 +96,7 @@ export function LoginForm({
                 </div>
                 <div className="relative">
                   <Input
+                    placeholder="Enter your Password"
                     id="password"
                     type={showPassword ? "text" : "password"}
                     className={cn("pr-10", errors.password ? "border-red-500" : "")}

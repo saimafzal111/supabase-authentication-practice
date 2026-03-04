@@ -99,7 +99,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="Enter you Email"
                 {...register("email")}
                 className={errors.email ? "border-red-500" : ""}
               />
@@ -111,6 +111,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <div className="relative">
                 <Input
+                  placeholder="Enter your Password"
                   id="password"
                   type={showPassword ? "text" : "password"}
                   className={cn("pr-10", errors.password ? "border-red-500" : "")}
@@ -138,6 +139,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               </FieldLabel>
               <div className="relative">
                 <Input
+                  placeholder="Enter your Confirm Password"
                   id="confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
                   className={cn("pr-10", errors.confirmPassword ? "border-red-500" : "")}
