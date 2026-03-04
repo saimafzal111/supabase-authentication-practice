@@ -1,31 +1,44 @@
-# Sidebar Simplification and Logout Plan
+# Professional Data Tables Implementation Plan
 
-This plan outlines the steps to streamline the sidebar navigation, implement a working logout button, and ensure the dashboard remains simple while having a functional navigation system.
+This plan describes how to implement professional data tables for all protected pages using a scalable and reusable approach inspired by shadcn/ui.
+
+## Proposed Folder Structure
+
+We will follow the **Colocation Pattern** for feature-specific table configuration:
+
+```text
+components/
+  ui/
+    data-table.tsx (NEW: Generic shadcn-style wrapper)
+app/
+  (protected)/
+    [feature]/
+      page.tsx (Page logic + data fetching)
+      columns.tsx (Column definitions for this feature)
+```
 
 ## Proposed Changes
 
-### [Sidebar Simplification]
-- [MODIFY] [components/app-sidebar.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/app-sidebar.tsx):
-    - Remove `navDocuments` and `navSecondary` from the data and the rendering.
-    - Update `navMain` to contain: Dashboard, Customers, Finance, Inventory, Products, Reports, and Workers with their correct icons and URLs.
+### [Core UI Component]
+- [NEW] [components/ui/data-table.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/ui/data-table.tsx): A clean, reusable TanStack Table wrapper that handles pagination, sorting, and filtering.
 
-### [Logout Functionality]
-- [MODIFY] [components/nav-user.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/nav-user.tsx):
-    - Import the `logout` server action.
-    - Wrap the "Log out" dropdown item with a form or a button that calls the logout action.
+### [Feature Pages]
 
-### [Dashboard Cleanup]
-- [MODIFY] [app/(protected)/dashboard/page.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(protected)/dashboard/page.tsx):
-    - Remove the complex UI (charts, tables) and revert to a simple "Welcome to Dashboard" message.
+For each of the following routes, we will create `columns.tsx` and update `page.tsx`:
+- **Customers**: Name, Email, Role, Status.
+- **Finance**: Invoice ID, Amount, Status, Date.
+- **Inventory**: Product Name, SKU, Stock, Price.
+- **Products**: Name, Category, Price, Stock.
+- **Reports**: Title, Type, Generated At, Status.
+- **Workers**: Employee Name, Department, Role, Joining Date.
 
-### [Navigation Improvements]
-- [MODIFY] [components/nav-main.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/nav-main.tsx):
-    - Ensure `SidebarMenuButton` uses `Link` from `next/link` with `asChild` so navigation happens without full page reloads.
+Each `page.tsx` will:
+1. Define (or fetch) the data array.
+2. Render the generic `<DataTable columns={columns} data={data} />`.
 
 ## Verification Plan
 
 ### Manual Verification
-1.  **Sidebar**: Check that only the main navigation and user profile are visible.
-2.  **Navigation**: Click through all items and verify they open the correct pages.
-3.  **Logout**: Click the user profile, then "Log out", and verify you are redirected to the login page.
-4.  **Dashboard**: Verify the dashboard is now simple text again.
+1.  **Sidebar Check**: Ensure clicking any sidebar item (e.g., Inventory) shows a professional table.
+2.  **Responsiveness**: Verify the tables look good on mobile and desktop.
+3.  **Navigation**: Ensure the persistent sidebar remains active while browsing different tables.
