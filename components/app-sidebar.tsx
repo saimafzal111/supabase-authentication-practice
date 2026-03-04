@@ -1,76 +1,107 @@
-'use client'
+"use client"
 
-import * as React from 'react'
-import { LayoutDashboard, Users, LogOut, ChevronRight } from 'lucide-react'
-import { logout } from '@/app/(auth)/actions'
-
+import * as React from "react"
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarRail,
-} from '@/components/ui/sidebar'
-import Link from 'next/link'
+  IconCamera,
+  IconChartBar,
+  IconDashboard,
+  IconDatabase,
+  IconFileAi,
+  IconFileDescription,
+  IconFileWord,
+  IconFolder,
+  IconHelp,
+  IconInnerShadowTop,
+  IconListDetails,
+  IconReport,
+  IconSearch,
+  IconSettings,
+  IconUsers,
+} from "@tabler/icons-react"
+
+import { NavDocuments } from "@/components/nav-documents"
+import { NavMain } from "@/components/nav-main"
+import { NavSecondary } from "@/components/nav-secondary"
+import { NavUser } from "@/components/nav-user"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar"
 
 const data = {
-    navMain: [
-        {
-            title: 'Dashboard',
-            url: '/dashboard',
-            icon: LayoutDashboard,
-        },
-        {
-            title: 'Customers',
-            url: '/dashboard',
-            icon: Users,
-        },
-    ],
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  navMain: [
+    {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: IconDashboard,
+    },
+    {
+      title: "Customers",
+      url: "/customers",
+      icon: IconUsers,
+    },
+    {
+      title: "Finance",
+      url: "/finance",
+      icon: IconReport,
+    },
+    {
+      title: "Inventory",
+      url: "/inventory",
+      icon: IconDatabase,
+    },
+    {
+      title: "Products",
+      url: "/products",
+      icon: IconFolder,
+    },
+    {
+      title: "Reports",
+      url: "/reports",
+      icon: IconChartBar,
+    },
+    {
+      title: "Workers",
+      url: "/workers",
+      icon: IconListDetails,
+    },
+  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    return (
-        <Sidebar collapsible="icon" {...props} className="border-r border-slate-200">
-            <SidebarHeader className="flex items-center justify-center py-6 border-b border-slate-200">
-                <div className="flex items-center gap-2 px-4">
-                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-slate-900 text-slate-50 font-bold">
-                        S
-                    </div>
-                    <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">Supabase Dashboard</span>
-                </div>
-            </SidebarHeader>
-            <SidebarContent className="p-2">
-                <SidebarMenu>
-                    {data.navMain.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton asChild tooltip={item.title} className="hover:bg-slate-100 transition-colors">
-                                <Link href={item.url}>
-                                    <item.icon />
-                                    <span>{item.title}</span>
-                                </Link>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    ))}
-                </SidebarMenu>
-            </SidebarContent>
-            <SidebarFooter className="border-t border-slate-200 p-2">
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            onClick={() => logout()}
-                            className="text-slate-500 hover:text-red-500 hover:bg-red-50 transition-colors"
-                            tooltip="Logout"
-                        >
-                            <LogOut className="rotate-180" />
-                            <span>Log out</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarFooter>
-            <SidebarRail />
-        </Sidebar>
-    )
+  return (
+    <Sidebar collapsible="offcanvas" {...props}>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
+            >
+              <a href="/dashboard">
+                <IconInnerShadowTop className="size-5!" />
+                <span className="text-base font-semibold">Acme Inc.</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain items={data.navMain} />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+    </Sidebar>
+  )
 }

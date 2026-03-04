@@ -8,10 +8,8 @@ export async function signup(formData: FormData) {
 
     const name = formData.get('name') as string
     const email = formData.get('email') as string
-    const phone = formData.get('phone') as string
     const password = formData.get('password') as string
 
-    // 1. Sign up the user in Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -22,16 +20,14 @@ export async function signup(formData: FormData) {
         return
     }
 
-    // 2. Insert customer details into the public.customers table
     if (authData.user) {
         const { error: dbError } = await supabase
             .from('customers')
             .insert([
                 {
-                    id: authData.user.id, // Linking customer to auth user
+                    id: authData.user.id,
                     name,
                     email,
-                    phone
                 }
             ])
 

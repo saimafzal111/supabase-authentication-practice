@@ -1,43 +1,31 @@
-# Dashboard & Auth Implementation Plan
+# Sidebar Simplification and Logout Plan
 
-Implement a dashboard with a sidebar, customer table, and auth pages (login/signup) using Next.js 16, Supabase, and Shadcn UI.
-
-## User Review Required
-
-> [!IMPORTANT]
-> The user needs to setup the Supabase project first. I am providing the instructions for this.
+This plan outlines the steps to streamline the sidebar navigation, implement a working logout button, and ensure the dashboard remains simple while having a functional navigation system.
 
 ## Proposed Changes
 
-### [Supabase Integration]
-- [x] Configure `.env.local`.
-- [x] Correct `lib/supabase/client.ts` and `lib/supabase/server.ts`.
-- [x] Setup `middleware.ts` for auth (Replacing `proxy.ts`).
+### [Sidebar Simplification]
+- [MODIFY] [components/app-sidebar.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/app-sidebar.tsx):
+    - Remove `navDocuments` and `navSecondary` from the data and the rendering.
+    - Update `navMain` to contain: Dashboard, Customers, Finance, Inventory, Products, Reports, and Workers with their correct icons and URLs.
 
-### [UI Components]
-- Install Shadcn components: `card`, `input`, `label`, `form`.
+### [Logout Functionality]
+- [MODIFY] [components/nav-user.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/nav-user.tsx):
+    - Import the `logout` server action.
+    - Wrap the "Log out" dropdown item with a form or a button that calls the logout action.
 
-### [Authentication Pages]
-#### [NEW] [login/page.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(auth)/login/page.tsx)
-#### [NEW] [signup/page.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(auth)/signup/page.tsx)
+### [Dashboard Cleanup]
+- [MODIFY] [app/(protected)/dashboard/page.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(protected)/dashboard/page.tsx):
+    - Remove the complex UI (charts, tables) and revert to a simple "Welcome to Dashboard" message.
 
-### [Dashboard Layout]
-#### [NEW] [components/app-sidebar.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/app-sidebar.tsx)
-#### [MODIFY] [app/layout.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/layout.tsx) - Add Sidebar documentation.
-
-### [Customers Page]
-#### [NEW] [app/(protected)/dashboard/page.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(protected)/dashboard/page.tsx)
-
-### [Customer CRUD]
-- Setup Supabase Policies (SQL Editor).
-- [NEW] [components/create-customer-modal.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/create-customer-modal.tsx)
-- [NEW] [components/edit-customer-modal.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/edit-customer-modal.tsx)
-- [MODIFY] [app/(protected)/dashboard/actions.ts](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(protected)/dashboard/actions.ts) - Implement CRUD server actions.
+### [Navigation Improvements]
+- [MODIFY] [components/nav-main.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/nav-main.tsx):
+    - Ensure `SidebarMenuButton` uses `Link` from `next/link` with `asChild` so navigation happens without full page reloads.
 
 ## Verification Plan
 
 ### Manual Verification
-1. Test signup with a new user.
-2. Test login with the created user.
-3. Verify sidebar navigation.
-4. Verify customer table display.
+1.  **Sidebar**: Check that only the main navigation and user profile are visible.
+2.  **Navigation**: Click through all items and verify they open the correct pages.
+3.  **Logout**: Click the user profile, then "Log out", and verify you are redirected to the login page.
+4.  **Dashboard**: Verify the dashboard is now simple text again.
