@@ -64,11 +64,11 @@ export function getColumns({ onEdit, onDelete }: ColumnsProps): ColumnDef<Worker
         },
         {
             accessorKey: "salary",
-            header: "Salary",
+            header: () => <div className="text-right pr-4">Salary</div>,
             cell: ({ row }) => {
                 const amount = parseFloat(row.getValue("salary"))
                 const formatted = new Intl.NumberFormat("en-US").format(amount)
-                return <div>{formatted}</div>
+                return <div className="text-right font-medium pr-4">{formatted}</div>
             },
         },
         {

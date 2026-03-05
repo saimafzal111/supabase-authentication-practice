@@ -51,10 +51,7 @@ export function getColumns({ onEdit, onDelete }: ColumnsProps): ColumnDef<Produc
             header: () => <div className="text-right pr-4">Price</div>,
             cell: ({ row }) => {
                 const amount = parseFloat(row.getValue("price"))
-                const formatted = new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                }).format(amount)
+                const formatted = new Intl.NumberFormat("en-US").format(amount)
                 return <div className="text-right font-medium pr-4">{formatted}</div>
             },
         },
