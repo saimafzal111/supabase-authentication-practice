@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { Plus, Settings2 } from "lucide-react"
+import { Settings2 } from "lucide-react"
 
 import {
   Table,
@@ -31,17 +31,22 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { AddInventory } from "@/components/add-inventory"
+import { EditInventory } from "@/components/edit-inventory"
+import { InventoryItem } from "@/hooks/inventory/use-inventory"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   filterKey?: string
+  onEdit: (item: InventoryItem) => void
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filterKey,
+  onEdit,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -113,9 +118,7 @@ export function DataTable<TData, TValue>({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button size="sm" className="flex items-center gap-2">
-            <Plus className="h-4 w-4" /> Add Item
-          </Button>
+          <AddInventory />
         </div>
       </div>
       <div className="rounded-md border">

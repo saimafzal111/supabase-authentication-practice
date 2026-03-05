@@ -1,15 +1,15 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import { WorkerDef } from "@/app/(protected)/workers/columns"
 
 export const useWorkers = () => {
-    return useQuery({
-        queryKey: ['workers'],
+    return useQuery<WorkerDef[]>({
+        queryKey: ["workers"],
         queryFn: async () => {
-            const response = await fetch('/api/workers')
+            const response = await fetch("/api/workers")
             if (!response.ok) {
-                const result = await response.json()
-                throw new Error(result.error || 'Failed to fetch workers')
+                throw new Error("Failed to fetch workers")
             }
             return response.json()
         },

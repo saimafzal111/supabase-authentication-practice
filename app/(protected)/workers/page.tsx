@@ -1,27 +1,19 @@
-import { createClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+"use client"
+
 import { DataTable } from "./data-table"
-import { WorkerDef } from "./columns"
+import { useWorkers } from "@/hooks/workers/use-workers"
+import { Loader2 } from "lucide-react"
 
-export default async function WorkersPage() {
-    const supabase = await createClient()
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-        redirect('/login')
-    }
-
-    // Fetch workers initially on the server
-    const { data, error } = await supabase
-        .from('workers')
-        .select('*')
-        .order('created_at', { ascending: false })
+export default function WorkersPage() {
+    const { data: workers, isLoading, error } = useWorkers()
 
     if (error) {
-        console.error("Error fetching workers serverside:", error.message)
+        return (
+            <div className="flex flex-1 items-center justify-center">
+                <p className="text-destructive">Error loading workers: {(error as any).message}</p>
+            </div>
+        )
     }
-
-    const workers: WorkerDef[] = data || []
 
     return (
         <div className="flex flex-1 flex-col gap-4">
@@ -29,7 +21,13 @@ export default async function WorkersPage() {
                 <h1 className="text-2xl font-bold">Workers</h1>
             </div>
             <div className="px-4 lg:px-6">
-                <DataTable data={workers} filterKey="name" />
+                {isLoading ? (
+                    <div className="flex h-24 items-center justify-center">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                ) : (
+                    <DataTable data={workers || []} filterKey="name" />
+                )}
             </div>
         </div>
     )
