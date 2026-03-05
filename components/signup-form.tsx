@@ -10,54 +10,31 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { signup } from "@/app/(auth)/actions"
-import { useMutation } from "@tanstack/react-query"
-
-const signupSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-})
-
-type SignupFormValues = z.infer<typeof signupSchema>
+import Link from "next/link"
+import { SignupFormValues, useSignup, signupSchema } from "@/hooks/auth/use-signup"
+import { toast } from "sonner"
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  const signupMutation = useMutation({
-    mutationFn: async (values: SignupFormValues) => {
-      const formData = new FormData()
-      formData.append("name", values.name)
-      formData.append("email", values.email)
-      formData.append("password", values.password)
-      return await signup(formData)
-    },
-    onError: (error: any) => {
-      // Server action already handles redirection/errors
-    }
-  })
+  const signupMutation = useSignup()
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignupFormValues>({
+  const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
@@ -67,8 +44,39 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     },
   })
 
-  const onSubmit = (values: SignupFormValues) => {
-    signupMutation.mutate(values)
+  const { setError, formState: { errors } } = form
+
+  const onSubmit = async (values: SignupFormValues) => {
+    console.log("SignupForm: Submitting...", values.email)
+    try {
+      const result = await signupMutation.mutateAsync(values)
+      console.log("SignupForm: Result received:", result)
+
+      if (result?.error) {
+        console.log("SignupForm: Error found in result:", result.error)
+        const errorMessage = result.error.toLowerCase()
+        if (errorMessage.includes("user already registered")) {
+          const msg = "This email is already registered."
+          setError("email", { type: "server", message: msg })
+          toast.error(msg)
+        } else if (errorMessage.includes("password")) {
+          setError("password", { type: "server", message: result.error })
+          toast.error(result.error)
+        } else {
+          setError("root", { type: "server", message: result.error })
+          toast.error(result.error)
+        }
+      } else {
+        toast.success("Account created successfully!")
+      }
+    } catch (err: any) {
+      if (err.message === "NEXT_REDIRECT") {
+        return
+      }
+      console.error("SignupForm: Unexpected error:", err)
+      toast.error("An unexpected error occurred. Please try again.")
+      setError("root", { type: "server", message: "An unexpected error occurred." })
+    }
   }
 
   return (
@@ -80,107 +88,117 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input
-                id="name"
-                placeholder="John Doe"
-                {...register("name")}
-                className={errors.name ? "border-red-500" : ""}
-              />
-              {errors.name && (
-                <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
-              )}
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter you Email"
-                {...register("email")}
-                className={errors.email ? "border-red-500" : ""}
-              />
-              {errors.email && (
-                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-              )}
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
-              <div className="relative">
-                <Input
-                  placeholder="Enter your Password"
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  className={cn("pr-10", errors.password ? "border-red-500" : "")}
-                  {...register("password")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {errors.root && (
+              <div className="p-3 text-sm font-medium text-destructive bg-destructive/10 rounded-md border border-destructive/20">
+                {errors.root.message}
               </div>
-              {errors.password ? (
-                <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
-              ) : (
-                <FieldDescription>
-                  Must be at least 8 characters long.
-                </FieldDescription>
-              )}
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="confirm-password">
-                Confirm Password
-              </FieldLabel>
-              <div className="relative">
-                <Input
-                  placeholder="Enter your Confirm Password"
-                  id="confirm-password"
-                  type={showConfirmPassword ? "text" : "password"}
-                  className={cn("pr-10", errors.confirmPassword ? "border-red-500" : "")}
-                  {...register("confirmPassword")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.confirmPassword ? (
-                <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>
-              ) : (
-                <FieldDescription>Please confirm your password.</FieldDescription>
-              )}
-            </Field>
-            {signupMutation.isError && (
-              <p className="text-sm text-red-500 text-center">Failed to create account. Please try again.</p>
             )}
-            <FieldGroup>
-              <Field>
-                <Button type="submit" disabled={signupMutation.isPending} className="w-full">
-                  {signupMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating account...
-                    </>
-                  ) : (
-                    "Create Account"
-                  )}
-                </Button>
-                <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="/login">Sign in</a>
-                </FieldDescription>
-              </Field>
-            </FieldGroup>
-          </FieldGroup>
-        </form>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your Email" type="email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        placeholder="Enter your Password"
+                        type={showPassword ? "text" : "password"}
+                        className="pr-10"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Must be at least 8 characters long.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        placeholder="Enter your Confirm Password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        className="pr-10"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormDescription>Please confirm your password.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="pt-4">
+              <Button type="submit" disabled={signupMutation.isPending} className="w-full">
+                {signupMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
+              </Button>
+              <div className="text-center text-sm mt-4">
+                Already have an account?{" "}
+                <Link href="/login" className="underline underline-offset-4 hover:text-primary transition-colors">
+                  Sign in
+                </Link>
+              </div>
+            </div>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   )

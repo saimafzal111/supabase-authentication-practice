@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 export async function signup(formData: FormData) {
+    console.log("Signup action triggered for:", formData.get('email'))
     const supabase = await createClient()
 
     const name = formData.get('name') as string
@@ -16,8 +17,8 @@ export async function signup(formData: FormData) {
     })
 
     if (authError) {
-        console.error(authError.message)
-        return
+        console.log("Signup error:", authError.message)
+        return { error: authError.message }
     }
 
     if (authData.user) {
@@ -25,7 +26,7 @@ export async function signup(formData: FormData) {
             .from('customers')
             .insert([
                 {
-                    id: authData.user.id,
+                    user_id: authData.user.id,
                     name,
                     email,
                 }
@@ -40,6 +41,7 @@ export async function signup(formData: FormData) {
 }
 
 export async function login(formData: FormData) {
+    console.log("Login action triggered for:", formData.get('email'))
     const supabase = await createClient()
 
     const email = formData.get('email') as string
@@ -51,10 +53,11 @@ export async function login(formData: FormData) {
     })
 
     if (error) {
-        console.error(error.message)
-        return
+        console.log("Login error:", error.message)
+        return { error: error.message }
     }
 
+    console.log("Login successful, redirecting...")
     redirect('/dashboard')
 }
 

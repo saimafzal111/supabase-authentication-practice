@@ -1,24 +1,37 @@
-
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
 import { DataTable } from "./data-table"
-import { columns, Worker } from "./columns"
+import { WorkerDef } from "./columns"
 
-async function getData(): Promise<Worker[]> {
-    return [
-        { id: "1", name: "Alice Johnson", department: "Engineering", role: "Software Engineer", joiningDate: "2023-01-15" },
-        { id: "2", name: "Bob Wilson", department: "HR", role: "HR Manager", joiningDate: "2022-06-10" },
-        { id: "3", name: "Charlie Davis", department: "Design", role: "UI Designer", joiningDate: "2023-11-20" },
-    ]
-}
+export default async function WorkersPage() {
+    const supabase = await createClient()
 
-export default async function Page() {
-    const data = await getData()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+        redirect('/login')
+    }
+
+    // Fetch workers initially on the server
+    const { data, error } = await supabase
+        .from('workers')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+    if (error) {
+        console.error("Error fetching workers serverside:", error.message)
+    }
+
+    const workers: WorkerDef[] = data || []
 
     return (
-        <div className="flex flex-1 flex-col gap-4">
-            <h1 className="text-2xl font-bold px-4 pt-4 lg:px-6">Workers</h1>
-            <div className="px-4 lg:px-6">
-                <DataTable columns={columns} data={data} filterKey="name" />
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-3xl font-bold tracking-tight">Workers</h1>
+                <p className="text-muted-foreground">
+                    Manage your employees and their salaries.
+                </p>
             </div>
+            <DataTable data={workers} filterKey="name" />
         </div>
     )
 }

@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import {
-    ColumnDef,
     ColumnFiltersState,
     SortingState,
     VisibilityState,
@@ -13,7 +12,13 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { Plus, Settings2 } from "lucide-react"
+import { Settings2 } from "lucide-react"
+import { AddCustomer } from "@/components/add-customer"
+import { EditCustomer } from "@/components/edit-customer"
+import { getColumns, Customer } from "./columns"
+import { useDeleteCustomer } from "@/hooks/customers/use-edit-customer"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 import {
     Table,
@@ -31,25 +36,50 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+interface DataTableProps {
+    data: Customer[]
     filterKey?: string
 }
 
-export function DataTable<TData, TValue>({
-    columns,
-    data,
-    filterKey,
-}: DataTableProps<TData, TValue>) {
+export function DataTable({ data, filterKey }: DataTableProps) {
+    const router = useRouter()
     const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-    )
-    const [columnVisibility, setColumnVisibility] =
-        React.useState<VisibilityState>({})
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
+
+    const [editCustomer, setEditCustomer] = React.useState<Customer | null>(null)
+    const [deleteCustomer, setDeleteCustomer] = React.useState<Customer | null>(null)
+
+    const deleteMutation = useDeleteCustomer()
+
+    const handleDelete = async () => {
+        if (!deleteCustomer) return
+        try {
+            await deleteMutation.mutateAsync(deleteCustomer.id)
+            toast.success("Customer deleted successfully!")
+            setDeleteCustomer(null)
+            router.refresh()
+        } catch (error: any) {
+            toast.error(error.message || "Failed to delete customer")
+        }
+    }
+
+    const columns = getColumns({
+        onEdit: (customer) => setEditCustomer(customer),
+        onDelete: (customer) => setDeleteCustomer(customer),
+    })
 
     const table = useReactTable({
         data,
@@ -97,25 +127,21 @@ export function DataTable<TData, TValue>({
                             {table
                                 .getAllColumns()
                                 .filter((column) => column.getCanHide())
-                                .map((column) => {
-                                    return (
-                                        <DropdownMenuCheckboxItem
-                                            key={column.id}
-                                            className="capitalize"
-                                            checked={column.getIsVisible()}
-                                            onCheckedChange={(value) =>
-                                                column.toggleVisibility(!!value)
-                                            }
-                                        >
-                                            {column.id}
-                                        </DropdownMenuCheckboxItem>
-                                    )
-                                })}
+                                .map((column) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.id}
+                                        className="capitalize"
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value) =>
+                                            column.toggleVisibility(!!value)
+                                        }
+                                    >
+                                        {column.id}
+                                    </DropdownMenuCheckboxItem>
+                                ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button size="sm" className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" /> Add Customer
-                    </Button>
+                    <AddCustomer />
                 </div>
             </div>
             <div className="rounded-md border">
@@ -123,18 +149,16 @@ export function DataTable<TData, TValue>({
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    )
-                                })}
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                    </TableHead>
+                                ))}
                             </TableRow>
                         ))}
                     </TableHeader>
@@ -192,6 +216,34 @@ export function DataTable<TData, TValue>({
                     </Button>
                 </div>
             </div>
+
+            {/* Edit Dialog */}
+            <EditCustomer
+                customer={editCustomer}
+                open={!!editCustomer}
+                onOpenChange={(open) => !open && setEditCustomer(null)}
+            />
+
+            {/* Delete Confirmation */}
+            <AlertDialog open={!!deleteCustomer} onOpenChange={(open) => !open && setDeleteCustomer(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will permanently delete <strong>{deleteCustomer?.name}</strong>. This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDelete}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            {deleteMutation.isPending ? "Deleting..." : "Delete"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }
