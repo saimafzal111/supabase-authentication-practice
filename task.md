@@ -1,17 +1,14 @@
-# Task: Implementing the Workers Feature
+# Task: Refactor Products Feature for Consistency
 
-- [ ] Provide SQL query for `workers` table
-- [ ] Create API routes for `workers`
-  - [ ] GET, POST inside `app/api/workers/route.ts`
-  - [ ] PATCH, DELETE inside `app/api/workers/[id]/route.ts`
-- [ ] Create custom frontend hooks
-  - [ ] `use-workers.ts`
-  - [ ] `use-add-worker.ts`
-  - [ ] `use-edit-worker.ts`
-- [ ] Create frontend UI components
-  - [ ] `columns.tsx`
-  - [ ] `data-table.tsx`
-  - [ ] `add-worker.tsx`
-  - [ ] `edit-worker.tsx`
-- [ ] Create main workers page (`app/(protected)/workers/page.tsx`)
-- [ ] Update navigation sidebar
+- [x] Update Project Name to "Water Inventory Management"
+- [x] Create SQL migration for `products` table
+- [x] Implement API routes for `products`
+- [x] Refactor Products Frontend for Consistency
+    - [x] Update `app/(protected)/products/columns.tsx` to use `getColumns` pattern
+    - [x] Update `app/(protected)/products/data-table.tsx` to include state for Add/Edit/Delete
+    - [x] Integrate Edit and Delete dialogs into `DataTable`
+    - [x] Move "Add Product" logic into `DataTable` (reusing existing button position)
+- [x] Verify functionality
+    - [x] Add product
+    - [x] Edit product
+    - [x] Delete product

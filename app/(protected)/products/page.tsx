@@ -1,23 +1,33 @@
+"use client"
 
 import { DataTable } from "./data-table"
-import { columns, Product } from "./columns"
+import { useProducts } from "@/hooks/products/use-products"
+import { Loader2 } from "lucide-react"
 
-async function getData(): Promise<Product[]> {
-    return [
-        { id: "1", name: "Gaming Headset", category: "Audio", price: 89.99, stock: 50 },
-        { id: "2", name: "Mechanical Keyboard", category: "Peripherals", price: 129.99, stock: 30 },
-        { id: "3", name: "Monitor 27-inch", category: "Display", price: 299.99, stock: 20 },
-    ]
-}
+export default function ProductsPage() {
+    const { data, isLoading, error } = useProducts()
 
-export default async function Page() {
-    const data = await getData()
+    if (error) {
+        return (
+            <div className="flex flex-1 items-center justify-center">
+                <p className="text-destructive">Error loading products: {error.message}</p>
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-1 flex-col gap-4">
-            <h1 className="text-2xl font-bold px-4 pt-4 lg:px-6">Products</h1>
+            <div className="flex items-center justify-between px-4 pt-4 lg:px-6">
+                <h1 className="text-2xl font-bold">Products</h1>
+            </div>
             <div className="px-4 lg:px-6">
-                <DataTable columns={columns} data={data} filterKey="name" />
+                {isLoading ? (
+                    <div className="flex h-24 items-center justify-center">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                ) : (
+                    <DataTable data={data || []} filterKey="name" />
+                )}
             </div>
         </div>
     )

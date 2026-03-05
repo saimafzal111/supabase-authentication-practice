@@ -1,28 +1,55 @@
-## Customer Management Integration
+# Walkthrough - Water Inventory Management Refactor
 
-I've implemented the "Add Customer" feature specifically using the API fetching method as requested.
+I have completed the update to "Water Inventory Management" and refactored the products feature to be consistent with the Workers and Customers implementation.
 
-### API Routes
-- **Created `app/api/customers/route.ts`**:
-    - `POST`: Handles customer creation and triggers `revalidatePath('/customers')`.
-    - `GET`: Fetches the latest customer list from Supabase.
+## Key Update
+As requested, I have integrated the **Add Product** interaction into the existing button position within the data table. No new buttons were added to the layout; instead, the existing button was made functional.
 
-### Custom Hooks
-- **Created `hooks/customers/use-add-customer.ts`**:
-    - Uses TanStack Query `useMutation` with the native `fetch` API.
-    - Specifically avoids Server Actions for this feature.
+## Changes Made
 
-### UI Components
-- **AddCustomer Dialog (`components/add-customer.tsx`)**:
-    - Refactored to use `shadcn/ui` Form components and `react-hook-form`.
-    - Integrated the `useAddCustomer` hook.
-    - Added `router.refresh()` on success to ensure the Server Component list updates immediately.
-- **DataTable (`app/(protected)/customers/data-table.tsx`)**:
-    - Integrated the `AddCustomer` component as the primary action.
-- **Columns (`app/(protected)/customers/columns.tsx`)**:
-    - Updated to match the actual database schema (`name`, `email`, `created_at`).
+### 1. Branding
+- Project renamed to **Water Inventory Management**.
+- Updated `package.json`, browser metadata, and sidebar title.
 
-## Refined Error Handling
-- Updated both **Login** and **Signup** forms to use a **Global Error Message** for generic authentication failures (like "Invalid credentials").
-- This prevents the UI from incorrectly highlighting valid fields (e.g., highlighting Email when only the Password was wrong).
-- Specific field-level errors (e.g., "Email already registered") still appear directly under the relevant field.
+### 2. Database (Supabase)
+- **Table**: `products` updated with columns: `name`, `volume`, and `price`.
+- **Script**: [supabase_products_setup.sql](file:///d:/OneDrive/Desktop/supabase-auth-practice/supabase_products_setup.sql) provides the necessary schema changes.
+
+### 3. Backend API
+- Standardized API routes at `/api/products` and `/api/products/[id]` for CRUD operations.
+
+### 4. Frontend Refactor (Consistency)
+- **Standardized Columns**: `columns.tsx` now follows the `getColumns` pattern for better state management.
+- **Unified DataTable**: `data-table.tsx` now handles Add, Edit, and Delete logic locally, providing a smoother user experience with Dialogs and AlertDialogs.
+- **Reusable Hooks**: Data management is powered by React Query via centralized hooks in `hooks/products/`.
+
+## Verification Instructions
+
+1. **Database**: Run the SQL script below in your Supabase SQL Editor if you haven't already.
+2. **Branding**: Verify the sidebar shows "Water Inventory Management".
+3. **Inventory Management**:
+    - Go to the **Products** page.
+    - Click the **Add Product** button (in its original location).
+    - Test adding, editing, and deleting water bottle types.
+
+```sql
+-- Create/Update products table
+create table if not exists public.products (
+    id uuid default gen_random_uuid() primary key,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    name text not null,
+    volume text not null,
+    price numeric not null
+);
+
+-- Set up Row Level Security (RLS)
+alter table public.products enable row level security;
+
+-- Create policy
+create policy "Allow all actions for authenticated users"
+on public.products
+for all
+to authenticated
+using (true)
+with check (true);
+```

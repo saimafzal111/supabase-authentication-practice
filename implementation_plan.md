@@ -1,75 +1,31 @@
-# Goal Description
+# Implementation Plan - Update Products and Project Name
 
-Add a new "Workers" management feature to the application, allowing the user to view, add, edit, and delete workers. This will function similarly to the existing Customers feature but will track `name` and `salary`.
+Change the project name to "Water Inventory Management" and update the `products` table to track water bottle inventory with specific columns: `name`, `volume`, and `price`.
 
 ## Proposed Changes
 
-### Database Schema (Supabase)
+### Project Identity
+- **[DONE] [package.json](file:///d:/OneDrive/Desktop/supabase-auth-practice/package.json)**: Updated the name to `water-inventory-management`.
+- **[DONE] [app-sidebar.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/app-sidebar.tsx)**: Updated logo title to "Water Inventory Management".
+- **[DONE] [layout.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/layout.tsx)**: Updated metadata title.
 
-We need to create a new `workers` table in Supabase. I will provide the user with the SQL query to run in the Supabase SQL Editor.
+### Database (Supabase)
+- **[DONE] [supabase_products_setup.sql](file:///d:/OneDrive/Desktop/supabase-auth-practice/supabase_products_setup.sql)**: SQL script to create the `products` table with columns: `id`, `name`, `volume`, `price`, `created_at`.
 
-*   `id`: UUID (Primary Key)
-*   `created_at`: Timestamp
-*   `name`: Text (Required)
-*   `salary`: Numeric/Text (Required)
+### API Layer
+- **[NEW] [app/api/products/route.ts](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/api/products/route.ts)**: GET and POST handlers for products.
+- **[NEW] [app/api/products/[id]/route.ts](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/api/products/[id]/route.ts)**: PATCH and DELETE handlers for products.
 
-### Backend API Routes
-
-We will create a new set of API routes to handle CRUD operations for workers.
-
-#### [NEW] app/api/workers/route.ts
-*   `GET`: Fetch all workers from the `workers` table, ordered by `created_at`.
-*   `POST`: Insert a new worker (`name`, `salary`) into the `workers` table.
-
-#### [NEW] app/api/workers/[id]/route.ts
-*   `PATCH`: Update an existing worker's details (`name`, `salary`).
-*   `DELETE`: Delete a worker by `id`.
-
-### Frontend Data Hooks (React Query)
-
-We will create custom hooks to interact with our new API routes, handling caching and revalidation automatically.
-
-#### [NEW] hooks/workers/use-workers.ts
-*   `useGetWorkers`: Fetch workers data.
-
-#### [NEW] hooks/workers/use-add-worker.ts
-*   `useAddWorker`: Mutation to add a new worker, including Zod schema validation.
-
-#### [NEW] hooks/workers/use-edit-worker.ts
-*   `useEditWorker`: Mutation to update an existing worker, including Zod schema validation.
-*   `useDeleteWorker`: Mutation to delete a worker.
-
-### Frontend UI Components
-
-We will build the UI components for the Workers page, reusing the design language from the Customers page.
-
-#### [NEW] components/add-worker.tsx
-*   A Dialog component containing a `react-hook-form` to add a new worker (Name, Salary).
-
-#### [NEW] components/edit-worker.tsx
-*   A Dialog component to edit an existing worker's details.
-
-#### [NEW] app/(protected)/workers/columns.tsx
-*   Defines the data table columns: Name, Salary, and Actions (Edit/Delete).
-*   Includes the DropdownMenu for Edit and Delete actions.
-
-#### [NEW] app/(protected)/workers/data-table.tsx
-*   The reusable data table component specifically typed for Workers.
-
-#### [NEW] app/(protected)/workers/page.tsx
-*   The main page component that fetches data and renders the `DataTable` and `AddWorker` button.
-
-### Navigation
-
-#### [MODIFY] components/layout/sidebar.tsx (or equivalent navigation file)
-*   Add a link to `/workers` in the main application navigation menu.
+### Frontend
+- **[MODIFY] [columns.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(protected)/products/columns.tsx)**: Update product type and table columns (`name`, `volume`, `price`).
+- **[MODIFY] [page.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(protected)/products/page.tsx)**: Fetch real data using hooks.
+- **[NEW] [hooks/products/](file:///d:/OneDrive/Desktop/supabase-auth-practice/hooks/products/)**: Add data fetching and mutation hooks (`use-products.ts`, `use-add-product.ts`, `use-edit-product.ts`).
+- **[NEW] [components/add-product.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/add-product.tsx)**: Form to add product.
+- **[NEW] [components/edit-product.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/edit-product.tsx)**: Form to edit product.
 
 ## Verification Plan
-
-### Manual Verification
-1.  **Database:** User runs the provided SQL query in Supabase.
-2.  **UI Navigation:** Click the new "Workers" link in the sidebar to load the `/workers` page.
-3.  **Create:** Click "Add Worker", fill out the form (Name, Salary), and submit. Verify the worker appears in the table.
-4.  **Read:** Verify the list of workers correctly displays on page load.
-5.  **Update:** Click the "Edit" action on a worker, change the salary, and save. Verify the table updates.
-6.  **Delete:** Click the "Delete" action on a worker and confirm. Verify the worker is removed from the table.
+1. User runs `supabase_products_setup.sql` in Supabase SQL Editor.
+2. Verify sidebar and project metadata update in the browser.
+3. Test adding a new product: Name, Volume, Price.
+4. Test editing a product.
+5. Test deleting a product.
