@@ -13,10 +13,31 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { Plus, Settings2 } from "lucide-react"
+import { Plus, Settings2, Trash2 } from "lucide-react"
 import { ViewFinance } from "@/components/view-finance"
 import { Finance, getColumns } from "./columns"
-
+import { AddFinance } from "@/components/add-finance"
+import { EditFinance } from "@/components/edit-finance"
+import { useEditFinance, useDeleteFinance } from "@/hooks/finance/use-finance"
+import { toast } from "sonner"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Table,
   TableBody,
@@ -25,28 +46,62 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 interface DataTableProps {
   data: Finance[]
   filterKey?: string
+  searchValue?: string
+  onSearchChange?: (value: string) => void
 }
 
 export function DataTable({
   data,
   filterKey,
+  searchValue,
+  onSearchChange,
 }: DataTableProps) {
+  const editMutation = useEditFinance()
+  const deleteMutation = useDeleteFinance()
+
+  const [viewFinance, setViewFinance] = React.useState<Finance | null>(null)
+  const [editingFinance, setEditingFinance] = React.useState<Finance | null>(null)
+  const [financeToDelete, setFinanceToDelete] = React.useState<Finance | null>(null)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false)
+
+  const handleMarkAsPaid = async (finance: Finance) => {
+    try {
+      await editMutation.mutateAsync({
+        id: finance.id,
+        values: { status: "Paid" }
+      })
+      toast.success("Invoice marked as paid")
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update invoice")
+    }
+  }
+
+  const handleDeleteRequest = (finance: Finance) => {
+    setFinanceToDelete(finance)
+    setDeleteConfirmOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!financeToDelete) return
+    try {
+      await deleteMutation.mutateAsync(financeToDelete.id)
+      toast.success("Invoice deleted successfully")
+      setDeleteConfirmOpen(false)
+      setFinanceToDelete(null)
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete invoice")
+    }
+  }
+
   const columns = getColumns({
     onView: (finance) => setViewFinance(finance),
-    onMarkAsPaid: (finance) => console.log("Mark as paid", finance),
-    onDelete: (finance) => console.log("Delete", finance),
+    onMarkAsPaid: handleMarkAsPaid,
+    onDelete: handleDeleteRequest,
+    onEdit: (finance) => setEditingFinance(finance),
   })
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -56,8 +111,6 @@ export function DataTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-
-  const [viewFinance, setViewFinance] = React.useState<Finance | null>(null)
 
   const table = useReactTable({
     data,
@@ -85,10 +138,14 @@ export function DataTable({
           {filterKey && (
             <Input
               placeholder={`Filter ${filterKey}...`}
-              value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn(filterKey)?.setFilterValue(event.target.value)
-              }
+              value={searchValue ?? (table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
+              onChange={(event) => {
+                if (onSearchChange) {
+                  onSearchChange(event.target.value)
+                } else {
+                  table.getColumn(filterKey)?.setFilterValue(event.target.value)
+                }
+              }}
               className="w-full sm:max-w-sm"
             />
           )}
@@ -121,9 +178,7 @@ export function DataTable({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button size="sm" className="flex items-center gap-2">
-            <Plus className="h-4 w-4" /> Add Invoice
-          </Button>
+          <AddFinance />
         </div>
       </div>
       <div className="rounded-md border">
@@ -177,11 +232,38 @@ export function DataTable({
         </Table>
       </div>
 
+      <EditFinance
+        item={editingFinance}
+        open={!!editingFinance}
+        onOpenChange={(open) => !open && setEditingFinance(null)}
+      />
+
       <ViewFinance
         finance={viewFinance}
         open={!!viewFinance}
         onOpenChange={(open) => !open && setViewFinance(null)}
       />
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the invoice
+              <span className="font-semibold text-foreground ml-1">{financeToDelete?.invoiceId}</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete Invoice"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">

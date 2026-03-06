@@ -34,14 +34,20 @@ import {
 import { ViewReport } from "@/components/view-report"
 import { Report, getColumns } from "./columns"
 
+import { AddReport } from "@/components/add-report"
+
 interface DataTableProps {
   data: Report[]
   filterKey?: string
+  searchValue?: string
+  onSearchChange?: (value: string) => void
 }
 
 export function DataTable({
   data,
   filterKey,
+  searchValue,
+  onSearchChange,
 }: DataTableProps) {
   const [viewReport, setViewReport] = React.useState<Report | null>(null)
 
@@ -85,10 +91,14 @@ export function DataTable({
           {filterKey && (
             <Input
               placeholder={`Filter ${filterKey}...`}
-              value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn(filterKey)?.setFilterValue(event.target.value)
-              }
+              value={searchValue ?? (table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
+              onChange={(event) => {
+                if (onSearchChange) {
+                  onSearchChange(event.target.value)
+                } else {
+                  table.getColumn(filterKey)?.setFilterValue(event.target.value)
+                }
+              }}
               className="w-full sm:max-w-sm"
             />
           )}
@@ -121,9 +131,7 @@ export function DataTable({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button size="sm" className="flex items-center gap-2">
-            <Plus className="h-4 w-4" /> Generate Report
-          </Button>
+          <AddReport />
         </div>
       </div>
       <div className="rounded-md border">

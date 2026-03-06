@@ -9,20 +9,18 @@ import { useInventory } from "@/hooks/inventory/use-inventory"
 import { useWorkers } from "@/hooks/workers/use-workers"
 import { useCustomers } from "@/hooks/customers/use-customers"
 import { Loader2 } from "lucide-react"
+import { useRealtimeSync } from "@/hooks/use-realtime-sync"
 
-// Mock finance data for now (matches finance page)
-const financeData = [
-  { id: "1", invoiceId: "INV-101", amount: 1500.00, status: "Paid", date: "2024-03-01" },
-  { id: "2", invoiceId: "INV-102", amount: 450.00, status: "Unpaid", date: "2024-03-02" },
-  { id: "3", invoiceId: "INV-103", amount: 2300.00, status: "Overdue", date: "2024-02-15" },
-]
+import { useFinance } from "@/hooks/finance/use-finance"
 
 export default function Page() {
+  useRealtimeSync()
   const { data: inventory, isLoading: invLoading } = useInventory()
   const { data: workers, isLoading: workersLoading } = useWorkers()
   const { data: customers, isLoading: customersLoading } = useCustomers()
+  const { data: financeRecords, isLoading: financeLoading } = useFinance()
 
-  const isLoading = invLoading || workersLoading || customersLoading
+  const isLoading = invLoading || workersLoading || customersLoading || financeLoading
 
   if (isLoading) {
     return (
@@ -33,7 +31,7 @@ export default function Page() {
   }
 
   // Calculate stats
-  const totalRevenue = financeData.reduce((acc, curr) => acc + curr.amount, 0)
+  const totalRevenue = (financeRecords || []).reduce((acc, curr) => acc + curr.amount, 0)
   const stats = {
     revenue: new Intl.NumberFormat("en-PK", { style: "currency", currency: "PKR" }).format(totalRevenue),
     newCustomers: customers?.length || 0,
@@ -41,8 +39,8 @@ export default function Page() {
     growthRate: "5.2%", // Static for now as per instructions to keep charts/logic mostly same
   }
 
-  // Use finance data for transactions as it was originally
-  const tableData = financeData.map(f => ({
+  // Use real finance data for transactions
+  const tableData = (financeRecords || []).map(f => ({
     id: f.id,
     header: f.invoiceId,
     description: `Transaction ${f.status}`,

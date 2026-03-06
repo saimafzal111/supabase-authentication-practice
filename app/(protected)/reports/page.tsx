@@ -1,23 +1,39 @@
 
+"use client"
+
+import { useState } from "react"
+import { useDebounce } from "use-debounce"
 import { DataTable } from "./data-table"
-import { Report } from "./columns"
+import { useReports } from "@/hooks/reports/use-reports"
+import { useRealtimeSync } from "@/hooks/use-realtime-sync"
+import { Loader2 } from "lucide-react"
 
-async function getData(): Promise<Report[]> {
-    return [
-        { id: "1", title: "Sales Analysis 2024", type: "Monthly", generatedAt: "2024-03-01", status: "Completed" },
-        { id: "2", title: "Inventory Report Q1", type: "Quarterly", generatedAt: "2024-04-01", status: "Processing" },
-        { id: "3", title: "Annual Audit 2023", type: "Annual", generatedAt: "2024-01-15", status: "Failed" },
-    ]
-}
+export default function Page() {
+    useRealtimeSync()
+    const [searchTerm, setSearchTerm] = useState("")
+    const [debouncedSearch] = useDebounce(searchTerm, 500)
+    const { data, isLoading } = useReports(debouncedSearch)
 
-export default async function Page() {
-    const data = await getData()
+    const isActualLoading = isLoading && !data
+
+    if (isActualLoading) {
+        return (
+            <div className="flex flex-1 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-1 flex-col gap-4">
             <h1 className="text-2xl font-bold px-4 pt-4 lg:px-6">Reports</h1>
             <div className="px-4 lg:px-6">
-                <DataTable data={data} filterKey="title" />
+                <DataTable
+                    data={data || []}
+                    filterKey="title"
+                    searchValue={searchTerm}
+                    onSearchChange={setSearchTerm}
+                />
             </div>
         </div>
     )

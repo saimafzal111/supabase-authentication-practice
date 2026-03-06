@@ -1,0 +1,31 @@
+import { createClient } from "@/lib/supabase/server"
+import { NextResponse } from "next/server"
+
+export async function PATCH(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params
+        const supabase = await createClient()
+        const body = await request.json()
+        const { data, error } = await supabase
+            .from("finance")
+            .update({
+                invoiceId: body.invoiceId,
+                amount: body.amount,
+                status: body.status,
+                date: body.date,
+            })
+            .eq("id", id)
+            .select()
+
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 500 })
+        }
+
+        return NextResponse.json(data[0])
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+}

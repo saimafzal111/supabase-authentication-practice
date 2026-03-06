@@ -1,23 +1,39 @@
+"use client"
 
+import { useState } from "react"
+import { useDebounce } from "use-debounce"
 import { DataTable } from "./data-table"
-import { Finance } from "./columns"
+import { useFinance } from "@/hooks/finance/use-finance"
+import { Loader2 } from "lucide-react"
 
-async function getData(): Promise<Finance[]> {
-    return [
-        { id: "1", invoiceId: "INV-101", amount: 1500.00, status: "Paid", date: "2024-03-01" },
-        { id: "2", invoiceId: "INV-102", amount: 450.00, status: "Unpaid", date: "2024-03-02" },
-        { id: "3", invoiceId: "INV-103", amount: 2300.00, status: "Overdue", date: "2024-02-15" },
-    ]
-}
+import { useRealtimeSync } from "@/hooks/use-realtime-sync"
 
-export default async function Page() {
-    const data = await getData()
+export default function Page() {
+    useRealtimeSync()
+    const [searchTerm, setSearchTerm] = useState("")
+    const [debouncedSearch] = useDebounce(searchTerm, 500)
+    const { data, isLoading } = useFinance(debouncedSearch)
+
+    const isActualLoading = isLoading && !data
+
+    if (isActualLoading) {
+        return (
+            <div className="flex flex-1 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-1 flex-col gap-4">
             <h1 className="text-2xl font-bold px-4 pt-4 lg:px-6">Finance</h1>
             <div className="px-4 lg:px-6">
-                <DataTable data={data} filterKey="invoiceId" />
+                <DataTable
+                    data={data || []}
+                    filterKey="invoiceId"
+                    searchValue={searchTerm}
+                    onSearchChange={setSearchTerm}
+                />
             </div>
         </div>
     )

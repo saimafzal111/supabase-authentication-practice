@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Eye, Check, Trash2, ArrowUpDown } from "lucide-react"
+import { Eye, Check, Trash2, ArrowUpDown, Pencil } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -19,9 +19,10 @@ type ColumnsProps = {
     onView: (finance: Finance) => void
     onMarkAsPaid: (finance: Finance) => void
     onDelete: (finance: Finance) => void
+    onEdit: (finance: Finance) => void
 }
 
-export const getColumns = ({ onView, onMarkAsPaid, onDelete }: ColumnsProps): ColumnDef<Finance>[] => [
+export const getColumns = ({ onView, onMarkAsPaid, onDelete, onEdit }: ColumnsProps): ColumnDef<Finance>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -102,6 +103,16 @@ export const getColumns = ({ onView, onMarkAsPaid, onDelete }: ColumnsProps): Co
                     >
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">View invoice</span>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-primary"
+                        title="Edit invoice"
+                        onClick={() => onEdit(finance)}
+                    >
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Edit invoice</span>
                     </Button>
                     <Button
                         variant="outline"
