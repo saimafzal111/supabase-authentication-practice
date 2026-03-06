@@ -59,9 +59,13 @@ export function getColumns({ onView, onEdit, onDelete }: ColumnsProps): ColumnDe
             accessorKey: "salary",
             header: () => <div className="text-right pr-4">Salary</div>,
             cell: ({ row }) => {
-                const amount = parseFloat(row.getValue("salary"))
-                const formatted = new Intl.NumberFormat("en-US").format(amount)
-                return <div className="text-right font-medium pr-4">{formatted}</div>
+                const salary = parseFloat(row.getValue("salary"))
+                const formatted = new Intl.NumberFormat("en-PK", {
+                    style: "currency",
+                    currency: "PKR",
+                }).format(salary)
+
+                return <div className="font-medium">{formatted}</div>
             },
         },
         {

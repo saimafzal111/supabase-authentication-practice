@@ -20,10 +20,10 @@ interface SectionCardsProps {
 }
 
 export function SectionCards({ stats }: SectionCardsProps) {
-  const revenue = stats?.revenue || "$1,250.00"
-  const newCustomers = stats?.newCustomers ?? 1234
-  const activeWorkers = stats?.activeWorkers ?? 45678
-  const growthRate = stats?.growthRate || "4.5%"
+  const revenue = stats?.revenue || "Rs. 0.00"
+  const newCustomers = stats?.newCustomers ?? 0
+  const activeWorkers = stats?.activeWorkers ?? 0
+  const growthRate = stats?.growthRate || "0.0%"
 
   return (
     <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">

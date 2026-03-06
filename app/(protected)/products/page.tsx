@@ -4,8 +4,13 @@ import { DataTable } from "./data-table"
 import { useProducts } from "@/hooks/products/use-products"
 import { Loader2 } from "lucide-react"
 
+import { useState } from "react"
+import { useDebounce } from "use-debounce"
+
 export default function ProductsPage() {
-    const { data, isLoading, error } = useProducts()
+    const [searchTerm, setSearchTerm] = useState("")
+    const [debouncedSearch] = useDebounce(searchTerm, 500)
+    const { data, isLoading, error } = useProducts(debouncedSearch)
 
     if (error) {
         return (
@@ -21,12 +26,17 @@ export default function ProductsPage() {
                 <h1 className="text-2xl font-bold">Products</h1>
             </div>
             <div className="px-4 lg:px-6">
-                {isLoading ? (
+                {isLoading && !data ? (
                     <div className="flex h-24 items-center justify-center">
                         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     </div>
                 ) : (
-                    <DataTable data={data || []} filterKey="name" />
+                    <DataTable
+                        data={data || []}
+                        filterKey="name"
+                        searchValue={searchTerm}
+                        onSearchChange={setSearchTerm}
+                    />
                 )}
             </div>
         </div>

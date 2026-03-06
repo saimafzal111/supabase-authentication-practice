@@ -1,6 +1,6 @@
 "use client"
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { Product } from "@/app/(protected)/products/columns"
 import * as z from "zod"
 
@@ -12,16 +12,20 @@ export const productSchema = z.object({
 
 export type ProductValues = z.infer<typeof productSchema>
 
-export const useProducts = () => {
+export const useProducts = (search?: string) => {
     return useQuery<Product[]>({
-        queryKey: ["products"],
+        queryKey: ["products", search],
         queryFn: async () => {
-            const response = await fetch("/api/products/read")
+            const url = search
+                ? `/api/products/read?search=${encodeURIComponent(search)}`
+                : "/api/products/read"
+            const response = await fetch(url)
             if (!response.ok) {
                 throw new Error("Failed to fetch products")
             }
             return response.json()
         },
+        placeholderData: keepPreviousData,
     })
 }
 

@@ -20,8 +20,12 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
+import { useDebounce } from "use-debounce"
+
 export default function Page() {
-    const { data, isLoading } = useInventory()
+    const [searchTerm, setSearchTerm] = useState("")
+    const [debouncedSearch] = useDebounce(searchTerm, 500)
+    const { data, isLoading } = useInventory(debouncedSearch)
     const deleteMutation = useDeleteInventory()
     const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
     const [editOpen, setEditOpen] = useState(false)
@@ -60,7 +64,7 @@ export default function Page() {
 
     const columns = getColumns(handleView, handleEdit, handleDeleteRequest)
 
-    if (isLoading) {
+    if (isLoading && !data) {
         return (
             <div className="flex flex-1 items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -77,6 +81,8 @@ export default function Page() {
                     data={data || []}
                     filterKey="name"
                     onEdit={handleEdit}
+                    searchValue={searchTerm}
+                    onSearchChange={setSearchTerm}
                 />
             </div>
 

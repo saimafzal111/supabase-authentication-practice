@@ -38,10 +38,10 @@ export function ViewWorker({ worker, open, onOpenChange }: ViewWorkerProps) {
                     <div className="grid grid-cols-4 items-center gap-4">
                         <span className="font-semibold">Salary:</span>
                         <span className="col-span-3">
-                            {new Intl.NumberFormat("en-US", {
+                            <div className="font-medium">{new Intl.NumberFormat("en-PK", {
                                 style: "currency",
-                                currency: "USD",
-                            }).format(worker.salary)}
+                                currency: "PKR",
+                            }).format(worker.salary)}</div>
                         </span>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">

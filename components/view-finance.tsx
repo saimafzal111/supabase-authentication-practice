@@ -39,9 +39,9 @@ export function ViewFinance({ finance, open, onOpenChange }: ViewFinanceProps) {
                     <div className="grid grid-cols-4 items-center gap-4">
                         <span className="font-semibold">Amount:</span>
                         <span className="col-span-3 font-medium">
-                            {new Intl.NumberFormat("en-US", {
+                            {new Intl.NumberFormat("en-PK", {
                                 style: "currency",
-                                currency: "USD",
+                                currency: "PKR",
                             }).format(finance.amount)}
                         </span>
                     </div>

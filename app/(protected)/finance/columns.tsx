@@ -63,9 +63,9 @@ export const getColumns = ({ onView, onMarkAsPaid, onDelete }: ColumnsProps): Co
         },
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("amount"))
-            const formatted = new Intl.NumberFormat("en-US", {
+            const formatted = new Intl.NumberFormat("en-PK", {
                 style: "currency",
-                currency: "USD",
+                currency: "PKR",
             }).format(amount)
             return <div className="font-medium">{formatted}</div>
         },

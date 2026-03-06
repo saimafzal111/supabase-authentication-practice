@@ -66,9 +66,13 @@ export function getColumns({ onView, onEdit, onDelete }: ColumnsProps): ColumnDe
             accessorKey: "price",
             header: () => <div className="text-right pr-4">Price</div>,
             cell: ({ row }) => {
-                const amount = parseFloat(row.getValue("price"))
-                const formatted = new Intl.NumberFormat("en-US").format(amount)
-                return <div className="text-right font-medium pr-4">{formatted}</div>
+                const price = parseFloat(row.getValue("price"))
+                const formatted = new Intl.NumberFormat("en-PK", {
+                    style: "currency",
+                    currency: "PKR",
+                }).format(price)
+
+                return <div className="font-medium">{formatted}</div>
             },
         },
         {

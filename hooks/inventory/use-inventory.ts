@@ -1,6 +1,6 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, keepPreviousData } from "@tanstack/react-query"
 
 export type InventoryType = 'in' | 'out' | 'damage';
 
@@ -13,15 +13,19 @@ export type InventoryItem = {
     created_at: string
 }
 
-export const useInventory = () => {
+export const useInventory = (search?: string) => {
     return useQuery<InventoryItem[]>({
-        queryKey: ["inventory"],
+        queryKey: ["inventory", search],
         queryFn: async () => {
-            const response = await fetch("/api/inventory")
+            const url = search
+                ? `/api/inventory?search=${encodeURIComponent(search)}`
+                : "/api/inventory"
+            const response = await fetch(url)
             if (!response.ok) {
                 throw new Error("Failed to fetch inventory")
             }
             return response.json()
         },
+        placeholderData: keepPreviousData,
     })
 }

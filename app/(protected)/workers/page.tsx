@@ -4,8 +4,13 @@ import { DataTable } from "./data-table"
 import { useWorkers } from "@/hooks/workers/use-workers"
 import { Loader2 } from "lucide-react"
 
+import { useState } from "react"
+import { useDebounce } from "use-debounce"
+
 export default function WorkersPage() {
-    const { data: workers, isLoading, error } = useWorkers()
+    const [searchTerm, setSearchTerm] = useState("")
+    const [debouncedSearch] = useDebounce(searchTerm, 500)
+    const { data: workers, isLoading, error } = useWorkers(debouncedSearch)
 
     if (error) {
         return (
@@ -21,12 +26,17 @@ export default function WorkersPage() {
                 <h1 className="text-2xl font-bold">Workers</h1>
             </div>
             <div className="px-4 lg:px-6">
-                {isLoading ? (
+                {isLoading && !workers ? (
                     <div className="flex h-24 items-center justify-center">
                         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     </div>
                 ) : (
-                    <DataTable data={workers || []} filterKey="name" />
+                    <DataTable
+                        data={workers || []}
+                        filterKey="name"
+                        searchValue={searchTerm}
+                        onSearchChange={setSearchTerm}
+                    />
                 )}
             </div>
         </div>

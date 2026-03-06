@@ -42,10 +42,10 @@ export function ViewProduct({ product, open, onOpenChange }: ViewProductProps) {
                     <div className="grid grid-cols-4 items-center gap-4">
                         <span className="font-semibold">Price:</span>
                         <span className="col-span-3">
-                            {new Intl.NumberFormat("en-US", {
+                            <div className="font-medium">{new Intl.NumberFormat("en-PK", {
                                 style: "currency",
-                                currency: "USD",
-                            }).format(product.price)}
+                                currency: "PKR",
+                            }).format(product.price)}</div>
                         </span>
                     </div>
                     {product.created_at && (

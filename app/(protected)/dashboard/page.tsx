@@ -35,7 +35,7 @@ export default function Page() {
   // Calculate stats
   const totalRevenue = financeData.reduce((acc, curr) => acc + curr.amount, 0)
   const stats = {
-    revenue: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(totalRevenue),
+    revenue: new Intl.NumberFormat("en-PK", { style: "currency", currency: "PKR" }).format(totalRevenue),
     newCustomers: customers?.length || 0,
     activeWorkers: workers?.length || 0,
     growthRate: "5.2%", // Static for now as per instructions to keep charts/logic mostly same
@@ -46,7 +46,7 @@ export default function Page() {
     id: f.id,
     header: f.invoiceId,
     description: `Transaction ${f.status}`,
-    amount: `$${f.amount.toFixed(2)}`,
+    amount: `Rs. ${f.amount.toFixed(2)}`,
     status: f.status,
     date: f.date
   }))
