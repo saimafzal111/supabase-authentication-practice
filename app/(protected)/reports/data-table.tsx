@@ -80,7 +80,7 @@ export function DataTable({
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between py-4 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-4">
         <div className="flex items-center gap-2 flex-1">
           {filterKey && (
             <Input
@@ -89,11 +89,11 @@ export function DataTable({
               onChange={(event) =>
                 table.getColumn(filterKey)?.setFilterValue(event.target.value)
               }
-              className="max-w-sm"
+              className="w-full sm:max-w-sm"
             />
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="ml-auto">

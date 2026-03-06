@@ -6,13 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 export type DashboardData = {
-    id: number
+    id: string
     header: string
-    type: string
+    description: string
+    amount: string
     status: string
-    target: string
-    limit: string
-    reviewer: string
+    date: string
 }
 
 export const columns: ColumnDef<DashboardData>[] = [
@@ -24,15 +23,20 @@ export const columns: ColumnDef<DashboardData>[] = [
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Header
+                    Invoice/Ref
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             )
         },
     },
     {
-        accessorKey: "type",
-        header: "Type",
+        accessorKey: "description",
+        header: "Description",
+    },
+    {
+        accessorKey: "amount",
+        header: "Amount",
+        cell: ({ row }) => <div className="font-medium">{row.getValue("amount")}</div>
     },
     {
         accessorKey: "status",
@@ -40,18 +44,14 @@ export const columns: ColumnDef<DashboardData>[] = [
         cell: ({ row }) => {
             const status = row.getValue("status") as string
             return (
-                <Badge variant={status === "Done" ? "default" : "secondary"}>
+                <Badge variant={status === "Paid" ? "default" : "secondary"}>
                     {status}
                 </Badge>
             )
         },
     },
     {
-        accessorKey: "reviewer",
-        header: "Reviewer",
-    },
-    {
-        accessorKey: "limit",
-        header: "Limit",
+        accessorKey: "date",
+        header: "Date",
     },
 ]

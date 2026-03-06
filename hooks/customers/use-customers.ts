@@ -1,6 +1,6 @@
 "use client"
 
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import * as z from "zod"
 
 export const customerSchema = z.object({
@@ -10,7 +10,29 @@ export const customerSchema = z.object({
     status: z.enum(["Active", "Inactive", "Pending"]),
 })
 
+export type Customer = {
+    id: string
+    name: string
+    phone?: string
+    address?: string
+    status: "Active" | "Inactive" | "Pending"
+    created_at: string
+}
+
 export type CustomerValues = z.input<typeof customerSchema>
+
+export const useCustomers = () => {
+    return useQuery<Customer[]>({
+        queryKey: ["customers"],
+        queryFn: async () => {
+            const response = await fetch("/api/customers/read")
+            if (!response.ok) {
+                throw new Error("Failed to fetch customers")
+            }
+            return response.json()
+        },
+    })
+}
 
 export const useAddCustomer = () => {
     const queryClient = useQueryClient()
