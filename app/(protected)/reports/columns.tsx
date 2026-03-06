@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { FileDown, Eye, Trash2, ArrowUpDown } from "lucide-react"
+import { FileDown, Eye, Pencil, Trash2, ArrowUpDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -18,10 +18,11 @@ export type Report = {
 type ColumnsProps = {
     onDownload: (report: Report) => void
     onView: (report: Report) => void
+    onEdit: (report: Report) => void
     onDelete: (report: Report) => void
 }
 
-export const getColumns = ({ onDownload, onView, onDelete }: ColumnsProps): ColumnDef<Report>[] => [
+export const getColumns = ({ onDownload, onView, onEdit, onDelete }: ColumnsProps): ColumnDef<Report>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -105,6 +106,16 @@ export const getColumns = ({ onDownload, onView, onDelete }: ColumnsProps): Colu
                     >
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">View details</span>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-primary"
+                        title="Edit"
+                        onClick={() => onEdit(report)}
+                    >
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
                     </Button>
                     <Button
                         variant="outline"

@@ -28,10 +28,12 @@ function ProtectedLayoutInner({ children }: { children: React.ReactNode }) {
         <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator orientation="vertical" className="mr-2 h-4" />
-                    <div className="font-semibold text-slate-900">{title}</div>
+                <header className="flex h-16 shrink-0 items-center justify-between border-b px-4 lg:px-6 bg-white sticky top-0 z-10">
+                    <div className="flex items-center gap-2">
+                        <SidebarTrigger className="-ml-1" />
+                        <Separator orientation="vertical" className="mr-2 h-4" />
+                        <div className="font-semibold text-slate-900 truncate max-w-[200px] sm:max-w-none">{title}</div>
+                    </div>
                 </header>
                 <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-slate-50">
                     {children}

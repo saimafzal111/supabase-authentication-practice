@@ -35,6 +35,7 @@ import { ViewReport } from "@/components/view-report"
 import { Report, getColumns } from "./columns"
 
 import { AddReport } from "@/components/add-report"
+import { EditReport } from "@/components/edit-report"
 
 interface DataTableProps {
   data: Report[]
@@ -50,10 +51,12 @@ export function DataTable({
   onSearchChange,
 }: DataTableProps) {
   const [viewReport, setViewReport] = React.useState<Report | null>(null)
+  const [editReport, setEditReport] = React.useState<Report | null>(null)
 
   const columns = getColumns({
     onDownload: (report) => console.log("Download", report),
     onView: (report) => setViewReport(report),
+    onEdit: (report) => setEditReport(report),
     onDelete: (report) => console.log("Delete", report),
   })
 
@@ -189,6 +192,12 @@ export function DataTable({
         report={viewReport}
         open={!!viewReport}
         onOpenChange={(open) => !open && setViewReport(null)}
+      />
+
+      <EditReport
+        item={editReport}
+        open={!!editReport}
+        onOpenChange={(open) => !open && setEditReport(null)}
       />
 
       <div className="flex items-center justify-end space-x-2 py-4">

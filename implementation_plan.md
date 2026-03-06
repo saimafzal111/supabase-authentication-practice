@@ -1,16 +1,31 @@
-# Real-Time Dashboard Implementation Plan
-
-Enable real-time data synchronization on the dashboard using Supabase Realtime and React Query.
+# Implementation Plan: Responsive Sidebar & Report Editing
 
 ## Proposed Changes
 
-### [Hooks]
-- Create `hooks/use-realtime-sync.ts`: A custom hook to subscribe to table changes (`workers`, `inventory`, `customers`, `finance`) and invalidate relevant queries.
+### [UI/UX]
 
-### [Dashboard]
-- Update `app/(protected)/dashboard/page.tsx`: Integrate the `useRealtimeSync` hook to ensure all statistics and tables reflect changes immediately.
+#### [MODIFY] [layout.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(protected)/layout.tsx)
+- The `SidebarProvider` and `Sidebar` components already handle "isMobile" state. I will ensure the `SidebarTrigger` is appropriately used and the sidebar is hidden/collapsed by default on mobile if it isn't already.
+
+### [Reports Feature]
+
+#### [NEW] [route.ts](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/api/reports/update/[id]/route.ts)
+- Add PATCH handler for reports.
+
+#### [NEW] [edit-report.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/components/edit-report.tsx)
+- Create the edit dialog component for reports.
+
+#### [MODIFY] [use-reports.ts](file:///d:/OneDrive/Desktop/supabase-auth-practice/hooks/reports/use-reports.ts)
+- Add `useEditReport` mutation.
+
+#### [MODIFY] [columns.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(protected)/reports/columns.tsx)
+- Add the edit button to actions.
+
+#### [MODIFY] [data-table.tsx](file:///d:/OneDrive/Desktop/supabase-auth-practice/app/(protected)/reports/data-table.tsx)
+- Add state for editing and integrate `EditReport` component.
 
 ## Verification Plan
-1. Open the dashboard.
-2. Manually modify a record in the Supabase database (e.g., change a worker's salary or an inventory count).
-3. Observe the dashboard updating automatically without a page refresh.
+
+### Automated/Manual Tests
+- Resize browser to check sidebar behavior.
+- Edit a report and check if toast appears and table updates.

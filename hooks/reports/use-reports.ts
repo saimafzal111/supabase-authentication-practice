@@ -37,3 +37,21 @@ export const useAddReport = () => {
         },
     })
 }
+
+export const useEditReport = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async ({ id, values }: { id: string, values: Partial<Report> }) => {
+            const response = await fetch(`/api/reports/update/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(values),
+            })
+            if (!response.ok) throw new Error("Failed to update report")
+            return response.json()
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["reports"] })
+        },
+    })
+}

@@ -1,23 +1,14 @@
-# Task: Implement Real-Time Dashboard Updates
+# Task: Responsive Sidebar & Report Editing
 
-Create the missing `finance` and `reports` tables in Supabase to support the finance module and reports page.
-
-- [x] Planning & Research
-    - [ ] Create `supabase_finance_setup.sql` (Finance & Reports) [/]
-    - [x] Verify table structures for real-time compatibility
-    - [x] Identify all mock data to be replaced with real data
-- [x] Real-Time Infrastructure
-    - [x] Create a `useRealtimeSync` hook to handle subscriptions
-    - [x] Integrate subscriptions for `workers`, `inventory`, `customers`, and `products`
-- [x] Dashboard Integration
-    - [x] Use real-time sync in the Dashboard page
-    - [x] Replace mock data with real database fetches for stats and table
-- [x] Finance Module Implementation
-    - [x] Create API routes for CRUD (Read, Create, Update, Delete)
-    - [x] Implement Search via database query
-    - [x] Integrate `AddFinance` and `EditFinance` components
-    - [x] Enable real-time updates for Finance records
-- [x] Verification
-    - [x] Test real-time updates across multiple tabs
-    - [x] Verify no memory leaks from subscriptions
-    - [x] Resolve all TypeScript lint errors
+- [x] Make Sidebar Responsive
+    - [x] Update `SidebarProvider` or CSS to hide sidebar on small screens
+    - [x] Ensure `SidebarTrigger` is always accessible or visible when needed
+- [x] Implement Report Editing
+    - [x] Create `app/api/reports/update/[id]/route.ts`
+    - [x] Create `components/edit-report.tsx`
+    - [x] Update `hooks/reports/use-reports.ts` with `useEditReport`
+    - [x] Update `app/(protected)/reports/columns.tsx` to include edit action
+    - [x] Update `app/(protected)/reports/data-table.tsx` to handle edit state
+- [ ] Verification [ ]
+    - [ ] Test sidebar behavior on different screen sizes
+    - [ ] Test editing a report and verifying real-time update
