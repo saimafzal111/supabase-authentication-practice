@@ -15,6 +15,7 @@ import {
 import { Settings2 } from "lucide-react"
 import { AddWorker } from "@/components/add-worker"
 import { EditWorker } from "@/components/edit-worker"
+import { ViewWorker } from "@/components/view-worker"
 import { getColumns, WorkerDef } from "./columns"
 import { useDeleteWorker } from "@/hooks/workers/use-workers"
 import { toast } from "sonner"
@@ -59,6 +60,7 @@ export function DataTable({ data, filterKey }: DataTableProps) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
+  const [viewWorker, setViewWorker] = React.useState<WorkerDef | null>(null)
   const [editWorker, setEditWorker] = React.useState<WorkerDef | null>(null)
   const [deleteWorker, setDeleteWorker] = React.useState<WorkerDef | null>(null)
 
@@ -77,6 +79,7 @@ export function DataTable({ data, filterKey }: DataTableProps) {
   }
 
   const columns = getColumns({
+    onView: (worker) => setViewWorker(worker),
     onEdit: (worker) => setEditWorker(worker),
     onDelete: (worker) => setDeleteWorker(worker),
   })
@@ -216,6 +219,13 @@ export function DataTable({ data, filterKey }: DataTableProps) {
           </Button>
         </div>
       </div>
+
+      {/* View Dialog */}
+      <ViewWorker
+        worker={viewWorker}
+        open={!!viewWorker}
+        onOpenChange={(open) => !open && setViewWorker(null)}
+      />
 
       {/* Edit Dialog */}
       <EditWorker

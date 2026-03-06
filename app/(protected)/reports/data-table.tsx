@@ -31,18 +31,26 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { ViewReport } from "@/components/view-report"
+import { Report, getColumns } from "./columns"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps {
+  data: Report[]
   filterKey?: string
 }
 
-export function DataTable<TData, TValue>({
-  columns,
+export function DataTable({
   data,
   filterKey,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps) {
+  const [viewReport, setViewReport] = React.useState<Report | null>(null)
+
+  const columns = getColumns({
+    onDownload: (report) => console.log("Download", report),
+    onView: (report) => setViewReport(report),
+    onDelete: (report) => console.log("Delete", report),
+  })
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -168,6 +176,13 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+
+      <ViewReport
+        report={viewReport}
+        open={!!viewReport}
+        onOpenChange={(open) => !open && setViewReport(null)}
+      />
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}

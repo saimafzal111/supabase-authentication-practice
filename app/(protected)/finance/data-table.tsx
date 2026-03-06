@@ -14,6 +14,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { Plus, Settings2 } from "lucide-react"
+import { ViewFinance } from "@/components/view-finance"
+import { Finance, getColumns } from "./columns"
 
 import {
   Table,
@@ -32,17 +34,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps {
+  data: Finance[]
   filterKey?: string
 }
 
-export function DataTable<TData, TValue>({
-  columns,
+export function DataTable({
   data,
   filterKey,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps) {
+  const columns = getColumns({
+    onView: (finance) => setViewFinance(finance),
+    onMarkAsPaid: (finance) => console.log("Mark as paid", finance),
+    onDelete: (finance) => console.log("Delete", finance),
+  })
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -50,6 +56,8 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  const [viewFinance, setViewFinance] = React.useState<Finance | null>(null)
 
   const table = useReactTable({
     data,
@@ -168,6 +176,13 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+
+      <ViewFinance
+        finance={viewFinance}
+        open={!!viewFinance}
+        onOpenChange={(open) => !open && setViewFinance(null)}
+      />
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}

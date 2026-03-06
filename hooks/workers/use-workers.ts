@@ -1,13 +1,21 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { WorkerDef } from "@/app/(protected)/workers/columns"
+import * as z from "zod"
+
+export const workerSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    salary: z.number().min(0, "Salary must be a positive number"),
+})
+
+export type WorkerValues = z.infer<typeof workerSchema>
 
 export const useWorkers = () => {
     return useQuery<WorkerDef[]>({
         queryKey: ["workers"],
         queryFn: async () => {
-            const response = await fetch("/api/workers")
+            const response = await fetch("/api/workers/read")
             if (!response.ok) {
                 throw new Error("Failed to fetch workers")
             }

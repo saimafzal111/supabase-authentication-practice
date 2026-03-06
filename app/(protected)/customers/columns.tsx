@@ -1,19 +1,11 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, ArrowUpDown, Pencil, Trash2 } from "lucide-react"
+import { ArrowUpDown, Eye, Pencil, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 export type Customer = {
     id: string
@@ -25,11 +17,12 @@ export type Customer = {
 }
 
 type ColumnsProps = {
+    onView: (customer: Customer) => void
     onEdit: (customer: Customer) => void
     onDelete: (customer: Customer) => void
 }
 
-export function getColumns({ onEdit, onDelete }: ColumnsProps): ColumnDef<Customer>[] {
+export function getColumns({ onView, onEdit, onDelete }: ColumnsProps): ColumnDef<Customer>[] {
     return [
         {
             id: "select",
@@ -88,32 +81,39 @@ export function getColumns({ onEdit, onDelete }: ColumnsProps): ColumnDef<Custom
         },
         {
             id: "actions",
+            header: () => <div className="text-center"></div>,
             cell: ({ row }) => {
                 const customer = row.original
                 return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => onEdit(customer)}>
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => onDelete(customer)}
-                                className="text-destructive focus:text-destructive"
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-primary"
+                            onClick={() => onView(customer)}
+                        >
+                            <Eye className="h-4 w-4" />
+                            <span className="sr-only">View</span>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-primary"
+                            onClick={() => onEdit(customer)}
+                        >
+                            <Pencil className="h-4 w-4" />
+                            <span className="sr-only">Edit</span>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-destructive"
+                            onClick={() => onDelete(customer)}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete</span>
+                        </Button>
+                    </div>
                 )
             },
         },

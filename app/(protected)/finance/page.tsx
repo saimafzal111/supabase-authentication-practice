@@ -1,6 +1,6 @@
 
 import { DataTable } from "./data-table"
-import { columns, Finance } from "./columns"
+import { Finance } from "./columns"
 
 async function getData(): Promise<Finance[]> {
     return [
@@ -17,7 +17,7 @@ export default async function Page() {
         <div className="flex flex-1 flex-col gap-4">
             <h1 className="text-2xl font-bold px-4 pt-4 lg:px-6">Finance</h1>
             <div className="px-4 lg:px-6">
-                <DataTable columns={columns} data={data} filterKey="invoiceId" />
+                <DataTable data={data} filterKey="invoiceId" />
             </div>
         </div>
     )

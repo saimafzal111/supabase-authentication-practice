@@ -15,6 +15,7 @@ import {
 import { Settings2 } from "lucide-react"
 import { AddProduct } from "@/components/add-product"
 import { EditProduct } from "@/components/edit-product"
+import { ViewProduct } from "@/components/view-product"
 import { getColumns, Product } from "./columns"
 import { useDeleteProduct } from "@/hooks/products/use-products"
 import { toast } from "sonner"
@@ -59,6 +60,7 @@ export function DataTable({ data, filterKey }: DataTableProps) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
+  const [viewProduct, setViewProduct] = React.useState<Product | null>(null)
   const [editProduct, setEditProduct] = React.useState<Product | null>(null)
   const [deleteProduct, setDeleteProduct] = React.useState<Product | null>(null)
 
@@ -77,6 +79,7 @@ export function DataTable({ data, filterKey }: DataTableProps) {
   }
 
   const columns = getColumns({
+    onView: (product) => setViewProduct(product),
     onEdit: (product) => setEditProduct(product),
     onDelete: (product) => setDeleteProduct(product),
   })
@@ -216,6 +219,13 @@ export function DataTable({ data, filterKey }: DataTableProps) {
           </Button>
         </div>
       </div>
+
+      {/* View Dialog */}
+      <ViewProduct
+        product={viewProduct}
+        open={!!viewProduct}
+        onOpenChange={(open) => !open && setViewProduct(null)}
+      />
 
       {/* Edit Dialog */}
       <EditProduct

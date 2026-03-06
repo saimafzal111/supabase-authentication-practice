@@ -6,6 +6,7 @@ import { useInventory, InventoryItem } from "@/hooks/inventory/use-inventory"
 import { useDeleteInventory } from "@/hooks/inventory/use-delete-inventory"
 import { useState } from "react"
 import { EditInventory } from "@/components/edit-inventory"
+import { ViewInventory } from "@/components/view-inventory"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import {
@@ -24,6 +25,8 @@ export default function Page() {
     const deleteMutation = useDeleteInventory()
     const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
     const [editOpen, setEditOpen] = useState(false)
+    const [viewingItem, setViewingItem] = useState<InventoryItem | null>(null)
+    const [viewOpen, setViewOpen] = useState(false)
 
     const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null)
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
@@ -31,6 +34,11 @@ export default function Page() {
     const handleEdit = (item: InventoryItem) => {
         setEditingItem(item)
         setEditOpen(true)
+    }
+
+    const handleView = (item: InventoryItem) => {
+        setViewingItem(item)
+        setViewOpen(true)
     }
 
     const handleDeleteRequest = (item: InventoryItem) => {
@@ -50,7 +58,7 @@ export default function Page() {
         }
     }
 
-    const columns = getColumns(handleEdit, handleDeleteRequest)
+    const columns = getColumns(handleView, handleEdit, handleDeleteRequest)
 
     if (isLoading) {
         return (
@@ -71,6 +79,12 @@ export default function Page() {
                     onEdit={handleEdit}
                 />
             </div>
+
+            <ViewInventory
+                item={viewingItem}
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+            />
 
             <EditInventory
                 item={editingItem}

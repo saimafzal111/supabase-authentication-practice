@@ -15,6 +15,7 @@ import {
 import { Settings2 } from "lucide-react"
 import { AddCustomer } from "@/components/add-customer"
 import { EditCustomer } from "@/components/edit-customer"
+import { ViewCustomer } from "@/components/view-customer"
 import { getColumns, Customer } from "./columns"
 import { useDeleteCustomer } from "@/hooks/customers/use-customers"
 import { toast } from "sonner"
@@ -59,6 +60,7 @@ export function DataTable({ data, filterKey }: DataTableProps) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
 
+    const [viewCustomer, setViewCustomer] = React.useState<Customer | null>(null)
     const [editCustomer, setEditCustomer] = React.useState<Customer | null>(null)
     const [deleteCustomer, setDeleteCustomer] = React.useState<Customer | null>(null)
 
@@ -77,6 +79,7 @@ export function DataTable({ data, filterKey }: DataTableProps) {
     }
 
     const columns = getColumns({
+        onView: (customer) => setViewCustomer(customer),
         onEdit: (customer) => setEditCustomer(customer),
         onDelete: (customer) => setDeleteCustomer(customer),
     })
@@ -216,6 +219,13 @@ export function DataTable({ data, filterKey }: DataTableProps) {
                     </Button>
                 </div>
             </div>
+
+            {/* View Dialog */}
+            <ViewCustomer
+                customer={viewCustomer}
+                open={!!viewCustomer}
+                onOpenChange={(open) => !open && setViewCustomer(null)}
+            />
 
             {/* Edit Dialog */}
             <EditCustomer

@@ -1,12 +1,14 @@
+"use client"
+
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
 import { Separator } from '@/components/ui/separator'
+import { useIdleLogout } from '@/hooks/auth/use-idle-logout'
 
-export default function ProtectedLayout({
-    children,
-}: {
-    children: React.ReactNode
-}) {
+function ProtectedLayoutInner({ children }: { children: React.ReactNode }) {
+    // Auto-logout after idle timeout
+    useIdleLogout()
+
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -22,4 +24,12 @@ export default function ProtectedLayout({
             </SidebarInset>
         </SidebarProvider>
     )
+}
+
+export default function ProtectedLayout({
+    children,
+}: {
+    children: React.ReactNode
+}) {
+    return <ProtectedLayoutInner>{children}</ProtectedLayoutInner>
 }

@@ -1,18 +1,10 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, ArrowUpDown } from "lucide-react"
+import { Eye, Check, Trash2, ArrowUpDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 
 export type Finance = {
@@ -23,7 +15,13 @@ export type Finance = {
     date: string
 }
 
-export const columns: ColumnDef<Finance>[] = [
+type ColumnsProps = {
+    onView: (finance: Finance) => void
+    onMarkAsPaid: (finance: Finance) => void
+    onDelete: (finance: Finance) => void
+}
+
+export const getColumns = ({ onView, onMarkAsPaid, onDelete }: ColumnsProps): ColumnDef<Finance>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -90,21 +88,43 @@ export const columns: ColumnDef<Finance>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => (
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
+        header: () => <div className="text-center"></div>,
+        cell: ({ row }) => {
+            const finance = row.original
+            return (
+                <div className="flex items-center justify-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-primary"
+                        title="View invoice"
+                        onClick={() => onView(finance)}
+                    >
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">View invoice</span>
                     </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem>View invoice</DropdownMenuItem>
-                    <DropdownMenuItem>Mark as paid</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        ),
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-green-600"
+                        title="Mark as paid"
+                        onClick={() => onMarkAsPaid(finance)}
+                    >
+                        <Check className="h-4 w-4" />
+                        <span className="sr-only">Mark as paid</span>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-destructive"
+                        title="Delete"
+                        onClick={() => onDelete(finance)}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                    </Button>
+                </div>
+            )
+        },
     },
 ]

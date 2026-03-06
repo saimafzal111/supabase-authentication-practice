@@ -1,18 +1,10 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, ArrowUpDown } from "lucide-react"
+import { FileDown, Eye, Trash2, ArrowUpDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 
 export type Report = {
@@ -23,7 +15,13 @@ export type Report = {
     status: "Completed" | "Processing" | "Failed"
 }
 
-export const columns: ColumnDef<Report>[] = [
+type ColumnsProps = {
+    onDownload: (report: Report) => void
+    onView: (report: Report) => void
+    onDelete: (report: Report) => void
+}
+
+export const getColumns = ({ onDownload, onView, onDelete }: ColumnsProps): ColumnDef<Report>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -83,21 +81,43 @@ export const columns: ColumnDef<Report>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => (
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
+        header: () => <div className="text-center"></div>,
+        cell: ({ row }) => {
+            const report = row.original
+            return (
+                <div className="flex items-center justify-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-primary"
+                        title="Download PDF"
+                        onClick={() => onDownload(report)}
+                    >
+                        <FileDown className="h-4 w-4" />
+                        <span className="sr-only">Download PDF</span>
                     </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem>Download PDF</DropdownMenuItem>
-                    <DropdownMenuItem>View online</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        ),
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-primary"
+                        title="View details"
+                        onClick={() => onView(report)}
+                    >
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">View details</span>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-destructive"
+                        title="Delete"
+                        onClick={() => onDelete(report)}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                    </Button>
+                </div>
+            )
+        },
     },
 ]

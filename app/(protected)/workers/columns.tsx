@@ -1,18 +1,10 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, ArrowUpDown, Pencil, Trash2 } from "lucide-react"
+import { ArrowUpDown, Eye, Pencil, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 export type WorkerDef = {
     id: string
@@ -22,11 +14,12 @@ export type WorkerDef = {
 }
 
 type ColumnsProps = {
+    onView: (worker: WorkerDef) => void
     onEdit: (worker: WorkerDef) => void
     onDelete: (worker: WorkerDef) => void
 }
 
-export function getColumns({ onEdit, onDelete }: ColumnsProps): ColumnDef<WorkerDef>[] {
+export function getColumns({ onView, onEdit, onDelete }: ColumnsProps): ColumnDef<WorkerDef>[] {
     return [
         {
             id: "select",
@@ -73,34 +66,38 @@ export function getColumns({ onEdit, onDelete }: ColumnsProps): ColumnDef<Worker
         },
         {
             id: "actions",
-            header: () => <div className="text-center">Actions</div>,
+            header: () => <div className="text-center"></div>,
             cell: ({ row }) => {
                 const worker = row.original
                 return (
-                    <div className="text-center">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">Open menu</span>
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => onEdit(worker)}>
-                                    <Pencil className="mr-2 h-4 w-4" />
-                                    Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => onDelete(worker)}
-                                    className="text-destructive focus:text-destructive"
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                    <div className="flex items-center justify-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-primary"
+                            onClick={() => onView(worker)}
+                        >
+                            <Eye className="h-4 w-4" />
+                            <span className="sr-only">View</span>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-primary"
+                            onClick={() => onEdit(worker)}
+                        >
+                            <Pencil className="h-4 w-4" />
+                            <span className="sr-only">Edit</span>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 bg-white border-input text-muted-foreground hover:text-destructive"
+                            onClick={() => onDelete(worker)}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete</span>
+                        </Button>
                     </div>
                 )
             },
