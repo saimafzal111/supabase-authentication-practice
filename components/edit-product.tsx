@@ -22,8 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEditProduct } from "@/hooks/products/use-edit-product"
-import { addProductSchema, AddProductValues } from "@/hooks/products/use-add-product"
+import { useEditProduct, productSchema, ProductValues } from "@/hooks/products/use-products"
 import { Product } from "@/app/(protected)/products/columns"
 import { toast } from "sonner"
 import { useEffect } from "react"
@@ -37,8 +36,8 @@ interface EditProductProps {
 export function EditProduct({ product, open, onOpenChange }: EditProductProps) {
     const editMutation = useEditProduct(product?.id || "")
 
-    const form = useForm<AddProductValues>({
-        resolver: zodResolver(addProductSchema),
+    const form = useForm<ProductValues>({
+        resolver: zodResolver(productSchema),
         defaultValues: {
             name: "",
             volume: "",
@@ -56,7 +55,7 @@ export function EditProduct({ product, open, onOpenChange }: EditProductProps) {
         }
     }, [product, form])
 
-    const onSubmit = async (values: AddProductValues) => {
+    const onSubmit = async (values: ProductValues) => {
         if (!product) return
         try {
             await editMutation.mutateAsync(values)

@@ -2,8 +2,7 @@
 
 import { DataTable } from "./data-table"
 import { getColumns } from "./columns"
-import { useInventory, InventoryItem } from "@/hooks/inventory/use-inventory"
-import { useDeleteInventory } from "@/hooks/inventory/use-delete-inventory"
+import { useInventory, InventoryItem, useDeleteInventory } from "@/hooks/inventory/use-inventory"
 import { useState } from "react"
 import { EditInventory } from "@/components/edit-inventory"
 import { toast } from "sonner"

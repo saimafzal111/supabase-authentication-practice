@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEditWorker, editWorkerSchema, EditWorkerValues } from "@/hooks/workers/use-edit-worker"
+import { useEditWorker, workerSchema, WorkerValues } from "@/hooks/workers/use-workers"
 import { WorkerDef } from "@/app/(protected)/workers/columns"
 import { toast } from "sonner"
 import { useEffect } from "react"
@@ -38,8 +38,8 @@ export function EditWorker({ worker, open, onOpenChange }: EditWorkerProps) {
     const router = useRouter()
     const editMutation = useEditWorker()
 
-    const form = useForm<EditWorkerValues>({
-        resolver: zodResolver(editWorkerSchema),
+    const form = useForm<WorkerValues>({
+        resolver: zodResolver(workerSchema),
         defaultValues: {
             name: "",
             salary: 0,
@@ -55,7 +55,7 @@ export function EditWorker({ worker, open, onOpenChange }: EditWorkerProps) {
         }
     }, [worker, form])
 
-    const onSubmit = async (values: EditWorkerValues) => {
+    const onSubmit = async (values: WorkerValues) => {
         if (!worker) return
         try {
             await editMutation.mutateAsync({ id: worker.id, values })

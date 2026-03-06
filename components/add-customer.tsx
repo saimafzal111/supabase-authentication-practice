@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input"
 import { Loader2, Plus } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useAddCustomer, addCustomerSchema, AddCustomerValues } from "@/hooks/customers/use-add-customer"
+import { useAddCustomer, customerSchema, CustomerValues } from "@/hooks/customers/use-customers"
 import { toast } from "sonner"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -40,8 +40,8 @@ export function AddCustomer() {
     const [open, setOpen] = useState(false)
     const addCustomerMutation = useAddCustomer()
 
-    const form = useForm<AddCustomerValues>({
-        resolver: zodResolver(addCustomerSchema),
+    const form = useForm<CustomerValues>({
+        resolver: zodResolver(customerSchema),
         defaultValues: {
             name: "",
             phone: "",
@@ -50,7 +50,7 @@ export function AddCustomer() {
         },
     })
 
-    const onSubmit = async (values: AddCustomerValues) => {
+    const onSubmit = async (values: CustomerValues) => {
         try {
             const result = await addCustomerMutation.mutateAsync(values)
             if (result.success) {

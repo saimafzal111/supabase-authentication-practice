@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useAddInventory, addInventorySchema, AddInventoryValues } from "@/hooks/inventory/use-add-inventory"
+import { useAddInventory, inventorySchema, InventoryValues } from "@/hooks/inventory/use-inventory"
 import { toast } from "sonner"
 import { useState } from "react"
 import { DatePickerInput } from "./date-picker-input"
@@ -39,8 +39,8 @@ export function AddInventory() {
     const [open, setOpen] = useState(false)
     const addInventoryMutation = useAddInventory()
 
-    const form = useForm<AddInventoryValues>({
-        resolver: zodResolver(addInventorySchema),
+    const form = useForm<InventoryValues>({
+        resolver: zodResolver(inventorySchema),
         defaultValues: {
             name: "",
             quantity: 0,
@@ -49,7 +49,7 @@ export function AddInventory() {
         },
     })
 
-    const onSubmit = async (values: AddInventoryValues) => {
+    const onSubmit = async (values: InventoryValues) => {
         try {
             await addInventoryMutation.mutateAsync(values)
             toast.success("Inventory item added successfully!")

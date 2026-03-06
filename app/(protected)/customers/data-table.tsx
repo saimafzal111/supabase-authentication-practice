@@ -16,7 +16,7 @@ import { Settings2 } from "lucide-react"
 import { AddCustomer } from "@/components/add-customer"
 import { EditCustomer } from "@/components/edit-customer"
 import { getColumns, Customer } from "./columns"
-import { useDeleteCustomer } from "@/hooks/customers/use-edit-customer"
+import { useDeleteCustomer } from "@/hooks/customers/use-customers"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 

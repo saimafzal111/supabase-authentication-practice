@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { Loader2, Plus } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useAddWorker, addWorkerSchema, AddWorkerValues } from "@/hooks/workers/use-add-worker"
+import { useAddWorker, workerSchema, WorkerValues } from "@/hooks/workers/use-workers"
 import { toast } from "sonner"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -33,15 +33,15 @@ export function AddWorker() {
     const [open, setOpen] = useState(false)
     const addWorkerMutation = useAddWorker()
 
-    const form = useForm<AddWorkerValues>({
-        resolver: zodResolver(addWorkerSchema),
+    const form = useForm<WorkerValues>({
+        resolver: zodResolver(workerSchema),
         defaultValues: {
             name: "",
             salary: 0,
         },
     })
 
-    const onSubmit = async (values: AddWorkerValues) => {
+    const onSubmit = async (values: WorkerValues) => {
         try {
             const result = await addWorkerMutation.mutateAsync(values)
             if (result.success) {

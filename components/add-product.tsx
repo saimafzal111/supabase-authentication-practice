@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { Loader2, Plus } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useAddProduct, addProductSchema, AddProductValues } from "@/hooks/products/use-add-product"
+import { useAddProduct, productSchema, ProductValues } from "@/hooks/products/use-products"
 import { toast } from "sonner"
 import { useState } from "react"
 
@@ -31,8 +31,8 @@ export function AddProduct() {
     const [open, setOpen] = useState(false)
     const addProductMutation = useAddProduct()
 
-    const form = useForm<AddProductValues>({
-        resolver: zodResolver(addProductSchema),
+    const form = useForm<ProductValues>({
+        resolver: zodResolver(productSchema),
         defaultValues: {
             name: "",
             volume: "",
@@ -40,7 +40,7 @@ export function AddProduct() {
         },
     })
 
-    const onSubmit = async (values: AddProductValues) => {
+    const onSubmit = async (values: ProductValues) => {
         try {
             await addProductMutation.mutateAsync(values)
             toast.success("Product added successfully!")

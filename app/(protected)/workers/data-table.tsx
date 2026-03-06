@@ -16,7 +16,7 @@ import { Settings2 } from "lucide-react"
 import { AddWorker } from "@/components/add-worker"
 import { EditWorker } from "@/components/edit-worker"
 import { getColumns, WorkerDef } from "./columns"
-import { useDeleteWorker } from "@/hooks/workers/use-edit-worker"
+import { useDeleteWorker } from "@/hooks/workers/use-workers"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 

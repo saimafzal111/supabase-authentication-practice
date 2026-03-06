@@ -16,7 +16,7 @@ import { Settings2 } from "lucide-react"
 import { AddProduct } from "@/components/add-product"
 import { EditProduct } from "@/components/edit-product"
 import { getColumns, Product } from "./columns"
-import { useDeleteProduct } from "@/hooks/products/use-edit-product"
+import { useDeleteProduct } from "@/hooks/products/use-products"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 

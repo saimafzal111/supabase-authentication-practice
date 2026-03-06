@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEditCustomer, editCustomerSchema, EditCustomerValues } from "@/hooks/customers/use-edit-customer"
+import { useEditCustomer, customerSchema, CustomerValues } from "@/hooks/customers/use-customers"
 import { Customer } from "@/app/(protected)/customers/columns"
 import { toast } from "sonner"
 import { useEffect } from "react"
@@ -45,8 +45,8 @@ export function EditCustomer({ customer, open, onOpenChange }: EditCustomerProps
     const router = useRouter()
     const editMutation = useEditCustomer()
 
-    const form = useForm<EditCustomerValues>({
-        resolver: zodResolver(editCustomerSchema),
+    const form = useForm<CustomerValues>({
+        resolver: zodResolver(customerSchema),
         defaultValues: {
             name: "",
             phone: "",
@@ -66,7 +66,7 @@ export function EditCustomer({ customer, open, onOpenChange }: EditCustomerProps
         }
     }, [customer, form])
 
-    const onSubmit = async (values: EditCustomerValues) => {
+    const onSubmit = async (values: CustomerValues) => {
         if (!customer) return
         try {
             await editMutation.mutateAsync({ id: customer.id, values })

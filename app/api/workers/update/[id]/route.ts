@@ -12,7 +12,7 @@ export async function PATCH(
         const body = await request.json()
 
         const { data, error } = await supabase
-            .from('customers')
+            .from('workers')
             .update(body)
             .eq('id', id)
             .select()
@@ -21,32 +21,8 @@ export async function PATCH(
             return NextResponse.json({ error: error.message }, { status: 500 })
         }
 
-        revalidatePath('/customers')
+        revalidatePath('/workers')
         return NextResponse.json({ success: true, data })
-    } catch (err: any) {
-        return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 })
-    }
-}
-
-export async function DELETE(
-    _request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    try {
-        const { id } = await params
-        const supabase = await createClient()
-
-        const { error } = await supabase
-            .from('customers')
-            .delete()
-            .eq('id', id)
-
-        if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 })
-        }
-
-        revalidatePath('/customers')
-        return NextResponse.json({ success: true })
     } catch (err: any) {
         return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 })
     }

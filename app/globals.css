@@ -1,6 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -120,7 +118,56 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.recharts-wrapper .recharts-cartesian-axis-tick-text {
+  fill: var(--color-muted-foreground);
+}
+
+.recharts-wrapper .recharts-cartesian-grid-line[stroke='#ccc'] {
+  stroke: color-mix(in oklch, var(--color-border) 50%, transparent);
+}
+
+.recharts-wrapper .recharts-curve.recharts-tooltip-cursor {
+  stroke: var(--color-border);
+}
+
+.recharts-wrapper .recharts-dot[stroke='#fff'] {
+  stroke: transparent;
+}
+
+.recharts-wrapper .recharts-layer {
+  outline: none;
+}
+
+.recharts-wrapper .recharts-polar-grid[stroke='#ccc'] {
+  stroke: var(--color-border);
+}
+
+.recharts-wrapper .recharts-radial-bar-background-sector {
+  fill: var(--color-muted);
+}
+
+.recharts-wrapper .recharts-rectangle.recharts-tooltip-cursor {
+  fill: var(--color-muted);
+}
+
+.recharts-wrapper .recharts-reference-line[stroke='#ccc'] {
+  stroke: var(--color-border);
+}
+
+.recharts-wrapper .recharts-sector {
+  outline: none;
+}
+
+.recharts-wrapper .recharts-sector[stroke='#fff'] {
+  stroke: transparent;
+}
+
+.recharts-wrapper .recharts-surface {
+  outline: none;
 }
