@@ -29,10 +29,12 @@ import {
 import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { inventorySchema, InventoryValues, useEditInventory, InventoryItem } from "@/hooks/inventory/use-inventory"
-import { DatePickerInput } from "./date-picker-input"
-import { useEffect } from "react"
+import { addInventorySchema, AddInventoryValues } from "@/hooks/inventory/use-add-inventory"
+import { useEditInventory } from "@/hooks/inventory/use-edit-inventory"
 import { toast } from "sonner"
+import { useEffect } from "react"
+import { InventoryItem } from "@/hooks/inventory/use-inventory"
+import { DatePickerInput } from "./date-picker-input"
 
 interface EditInventoryProps {
     item: InventoryItem | null
@@ -43,8 +45,8 @@ interface EditInventoryProps {
 export function EditInventory({ item, open, onOpenChange }: EditInventoryProps) {
     const editMutation = useEditInventory()
 
-    const form = useForm<InventoryValues>({
-        resolver: zodResolver(inventorySchema),
+    const form = useForm<AddInventoryValues>({
+        resolver: zodResolver(addInventorySchema),
         defaultValues: {
             name: "",
             quantity: 0,
@@ -64,7 +66,7 @@ export function EditInventory({ item, open, onOpenChange }: EditInventoryProps) 
         }
     }, [item, form])
 
-    const onSubmit = async (values: InventoryValues) => {
+    const onSubmit = async (values: AddInventoryValues) => {
         if (!item) return
         try {
             await editMutation.mutateAsync({ id: item.id, values })
