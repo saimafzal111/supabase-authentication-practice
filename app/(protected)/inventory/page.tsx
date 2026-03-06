@@ -84,7 +84,7 @@ export default function Page() {
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
                             This action cannot be undone. This will permanently delete the inventory record for
-                            <span className="font-semibold text-foreground"> "{itemToDelete?.name}"</span>.
+                            <span className="font-semibold text-foreground">{itemToDelete?.name}</span>.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
